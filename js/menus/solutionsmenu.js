@@ -7,21 +7,27 @@ function SolutionsMenu (parentElement, runScenario, viewScenario) {
   function redraw () {
     parentElement.innerHTML = '';
 
+    var runButton = Utils.createElement('button', parentElement);
+    var buttonText = document.createTextNode('Run All');
+    runButton.appendChild(buttonText);
+    runButton.onclick = function (evt) {
+      runScenario(0, true);
+    }
+
     for (var i=0; i<Scenarios.length; i++) {
       scenarioButtons(i);
     }
 
     function scenarioButtons (index) {
-      var container = Utils.createElement('div', parentElement)
-      container.style = "padding:5px;"
+      var container = Utils.createElement('div', parentElement);
+      container.style = "padding:5px;";
 
-      var scenarioIndex = Utils.createElement('span', container)
-      scenarioIndex.innerText = "Scenario "+index
-      scenarioIndex.style = "padding-right:5px;font-size: 13pt;"
+      var scenarioIndex = Utils.createElement('span', container);
+      scenarioIndex.innerText = "Scenario "+index;
 
-      if (passed.indexOf(index) >= 0) {
-        scenarioIndex.style += "color: #37883a;"
-      }
+      var style = "padding-right:5px;font-size: 13pt; color: "
+      style += passed.indexOf(index) >= 0? "#37883a;" : "#888888;"
+      scenarioIndex.style = style
 
       var viewButton = Utils.createElement('button', container)
       buttonText = document.createTextNode('View')

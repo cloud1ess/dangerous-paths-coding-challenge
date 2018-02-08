@@ -50,13 +50,24 @@ function ScenarioView (panel) {
     panel.render();
   }
 
+  function scenarioName (name) {
+    panel.drawText({
+      text: name,
+      x:6,
+      y:40,
+      font: "40px Arial",
+      colour: '#444444',
+    });
+    panel.render();
+  }
+
   function win () {
     panel.drawText({
       text: 'Win',
       x:6,
-      y:84,
+      y:124,
       font: "100px Arial",
-      colour: '#e6ac00',
+      colour: '#444444',
     });
     panel.render();
   }
@@ -65,9 +76,9 @@ function ScenarioView (panel) {
     panel.drawText({
       text: 'Lose',
       x:6,
-      y:84,
+      y:124,
       font: "100px Arial",
-      colour: '#ff1a1a',
+      colour: '#444444',
     });
     panel.render();
   }
@@ -89,6 +100,7 @@ function ScenarioView (panel) {
   return {
     update: update,
     win: win,
+    scenarioName: scenarioName,
     lose: lose,
     reset: reset
   }

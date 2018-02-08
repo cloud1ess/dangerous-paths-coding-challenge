@@ -3,36 +3,44 @@
   solutionsContainer.style = "display: inline-block; vertical-align: top;"
 
   var gamePanel = createCanvasPanel();
-  var game = Game(gamePanel, scenarioWon, scenarioLost);
+  var game = Game(gamePanel, scenarioFinished);
   var solutionsMenu = SolutionsMenu(solutionsContainer, runScenario, viewScenario);
   var solutions = Solutions();
 
   var currentScenario
+  var nextScenario
+  var timeout
 
-  function runScenario (index) {
+  function runScenario (index, autoNext) {
     if (currentScenario || currentScenario === 0) {
+      nextScenario = null;
       scenarioLost();
     }
     currentScenario = index;
+    if (autoNext && currentScenario+1 < Scenarios.length) {
+      nextScenario = currentScenario+1;
+    } else {
+      nextScenario = null;
+    }
     game.runScenario(index, false)
     solutions.runScenario(index, {
       move: game.move,
       getCellProperties: game.getCellProperties
-    })
+    });
+    timeout = setTimeout(function () {
+      scenarioFinished(false);
+    }, 10000)
   }
 
-  function scenarioWon () {
-    if (currentScenario) {
-      solutionsMenu.result(currentScenario, true);
+  function scenarioFinished (won) {
+    clearTimeout(timeout)
+    if (currentScenario || currentScenario === 0) {
+      solutionsMenu.result(currentScenario, won);
     }
     currentScenario = null;
-  }
-
-  function scenarioLost () {
-    if (currentScenario) {
-      solutionsMenu.result(currentScenario, false);
+    if (nextScenario) {
+      runScenario(nextScenario, true);
     }
-    currentScenario = null;
   }
 
   function viewScenario (index) {

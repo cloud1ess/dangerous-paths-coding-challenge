@@ -67,11 +67,11 @@ function ScenarioRunner(stateChange, win, lose) {
     triggerStateChange(playerPosStr);
 
     if (!canSurviveOnCell(playerPosStr)) {
+      pause();
       lose();
-      pause(true);
     } else if (isWinningCell(playerPosStr)){
+      pause();
       win();
-      pause(true);
     }
   }
 
