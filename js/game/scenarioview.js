@@ -3,6 +3,8 @@ function ScenarioView (panel) {
   var gridPanel = new Panel(panel)
   var CELL_SIZE = 32
   var STROKE = 1
+  var CANVAS_SIZE = 600
+  var HALF_CANVAS_SIZE = CANVAS_SIZE/2
 
   var cellTypes = {
     0: '#e2e2e2',
@@ -10,6 +12,16 @@ function ScenarioView (panel) {
     p: '#0099cc',
     x: '#33cc33'
   }
+
+  panel.drawStrokeRect({
+    x: STROKE,
+    y: STROKE,
+    wid: CANVAS_SIZE - (2*STROKE),
+    hei: CANVAS_SIZE - (2*STROKE),
+    lineWidth: 2*STROKE,
+    colour: '#888888'
+  });
+  panel.render();
 
   function renderCell (type, x, y) {
     gridPanel.drawRect({
@@ -24,6 +36,10 @@ function ScenarioView (panel) {
   function update (state) {
     gridPanel.clear();
     var columns = Math.floor(Math.sqrt(state.length));
+    gridPanel.setPos({
+      x: HALF_CANVAS_SIZE-(columns*CELL_SIZE*0.5),
+      y: HALF_CANVAS_SIZE-(columns*CELL_SIZE*0.5)
+    })
     var x, y;
 
     for (var i=0; i<state.length; i++){
@@ -31,15 +47,49 @@ function ScenarioView (panel) {
       y = Math.floor(i/columns);
       renderCell(state[i], x, y);
     }
-    gridPanel.render();
+    panel.render();
+  }
+
+  function win () {
+    panel.drawText({
+      text: 'Win',
+      x:6,
+      y:84,
+      font: "100px Arial",
+      colour: '#e6ac00',
+    });
+    panel.render();
+  }
+
+  function lose () {
+    panel.drawText({
+      text: 'Lose',
+      x:6,
+      y:84,
+      font: "100px Arial",
+      colour: '#ff1a1a',
+    });
+    panel.render();
   }
 
   function reset () {
     gridPanel.clear();
+    panel.clear();
+    panel.drawStrokeRect({
+      x: STROKE,
+      y: STROKE,
+      wid: CANVAS_SIZE - (2*STROKE),
+      hei: CANVAS_SIZE - (2*STROKE),
+      lineWidth: 2*STROKE,
+      colour: '#888888'
+    });
+    panel.render();
   }
 
   return {
     update: update,
+    win: win,
+    lose: lose,
     reset: reset
   }
 }

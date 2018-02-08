@@ -1,34 +1,38 @@
 function Game(panel) {
 
   var view = ScenarioView(panel);
-  var runner = ScenarioRunner(view.update, win, loose);
+  var runner = ScenarioRunner(view.update, win, lose);
   var userInput
 
-  runScenario(0, true);
-
-  function runScenario(index, userInput) {
+  function runScenario(index, userInputNeeded) {
+    reset()
     runner.run(Scenarios[index]);
-    if (userInput) {
+    if (userInputNeeded) {
       userInput = UserInput(runner.move);
     }
   }
 
   function win () {
-    console.log("Win");
+    view.win();
   }
 
-  function loose () {
-    console.log("Loose");
+  function lose () {
+    view.lose();
   }
 
   function reset() {
     view.reset();
     runner.reset();
-    userInput.tearDown();
+    if (userInput) {
+      userInput.tearDown();
+      userInput = null
+    }
   }
 
   return {
     runScenario : runScenario,
+    move: runner.move,
+    getCellProperties: runner.getCellProperties,
     reset : reset
   }
 }

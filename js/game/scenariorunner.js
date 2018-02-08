@@ -1,35 +1,36 @@
-function ScenarioRunner(stateChange, win, loose) {
+function ScenarioRunner(stateChange, win, lose) {
   var currentFrame
   var currentFrameIndex
   var paused
   var gridSize
-  var playerPos
   var currentScenario
   var frameTimer
+  var playerPos
 
   function run (scenario) {
     currentScenario = scenario;
-    gridSize = Math.floor(Math.sqrt(scenario[0].length));
-    findPlayerPos(scenario[0]);
+    gridSize = Math.floor(Math.sqrt(scenario.grid[0].length));
+    playerPos = {
+      x: scenario.start.x,
+      y: scenario.start.y
+    }
 
     currentFrameIndex = -1;
     progressAFrame()
 
-    if (currentScenario.length > 1) {
+    if (currentScenario.grid.length > 1) {
       frameTimer = setInterval(progressAFrame, 2000);
     }
   }
 
   function progressAFrame () {
     currentFrameIndex++
-    if (currentFrameIndex >= currentScenario.length) {
+    if (currentFrameIndex >= currentScenario.grid.length) {
       currentFrameIndex = 0;
     }
-    currentFrame = currentScenario[currentFrameIndex]
-    if (currentFrameIndex === 0) {
-      currentFrame = currentFrame.replace('p', '1');
-    }
-    triggerStateChange(findPlayerStr())
+    currentFrame = currentScenario.grid[currentFrameIndex]
+
+    triggerStateChange(convertPosToIndex(playerPos))
   }
 
   function triggerStateChange (playerIndex) {
@@ -61,12 +62,12 @@ function ScenarioRunner(stateChange, win, loose) {
     }
 
     playerPos = newCellPos;
-    var playerPosStr = findPlayerStr();
+    var playerPosStr = convertPosToIndex(playerPos);
 
     triggerStateChange(playerPosStr);
 
     if (!canSurviveOnCell(playerPosStr)) {
-      loose();
+      lose();
       pause(true);
     } else if (isWinningCell(playerPosStr)){
       win();
@@ -74,8 +75,8 @@ function ScenarioRunner(stateChange, win, loose) {
     }
   }
 
-  function findPlayerStr () {
-    return Math.min(currentFrame.length-1, Math.max(0,(playerPos.y * gridSize) + playerPos.x))
+  function convertPosToIndex (pos) {
+    return Math.min(currentFrame.length-1, Math.max(0,(pos.y * gridSize) + pos.x))
   }
 
   function canSurviveOnCell (playerIndex) {
@@ -86,11 +87,13 @@ function ScenarioRunner(stateChange, win, loose) {
     return currentFrame[playerIndex] === 'x'
   }
 
-  function findPlayerPos (scenario) {
-    var index = scenario.indexOf('p');
-    playerPos = {
-      x: index%gridSize,
-      y: Math.floor(index/gridSize)
+  function getCellProperties (x, y) {
+    var cell = currentFrame[convertPosToIndex({x:x, y:y})];
+
+    switch (cell) {
+      case '0': return 'die'; break;
+      case '1': return 'live'; break;
+      case 'x': return 'win'; break;
     }
   }
 
@@ -109,6 +112,7 @@ function ScenarioRunner(stateChange, win, loose) {
     run: run,
     pause: pause,
     move: move,
-    reset: reset
+    reset: reset,
+    getCellProperties: getCellProperties
   }
 }

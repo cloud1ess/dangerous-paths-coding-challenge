@@ -1,10 +1,24 @@
 (function Main () {
   var rootContainer = Utils.createElement('div', null);
-  var scenariosContainer = Utils.createElement('div', rootContainer);
+  var solutionsContainer = Utils.createElement('div', rootContainer);
 
   var gamePanel = createCanvasPanel();
   var game = Game(gamePanel);
 
+  var solutions = Solutions(solutionsContainer, runScenario, viewScenario);
+
+  function runScenario (index) {
+    game.runScenario(index, false)
+
+    return {
+      move: game.move,
+      getCellProperties: game.getCellProperties
+    }
+  }
+
+  function viewScenario (index) {
+    game.runScenario(index, true)
+  }
 
   function createCanvasPanel () {
     var gameCanvas = Utils.createElement('canvas', rootContainer);
