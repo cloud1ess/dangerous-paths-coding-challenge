@@ -1,4 +1,4 @@
-function Game(panel) {
+function Game(panel, won, lost) {
 
   var view = ScenarioView(panel);
   var runner = ScenarioRunner(view.update, win, lose);
@@ -14,10 +14,12 @@ function Game(panel) {
 
   function win () {
     view.win();
+    won();
   }
 
   function lose () {
     view.lose();
+    lost();
   }
 
   function reset() {
