@@ -1,26 +1,17 @@
 function ScenarioRunner(stateChange, win, lose) {
-  var currentFrame
-  var currentFrameIndex
-  var paused
-  var gridSize
-  var currentScenario
-  var frameTimer
-  var playerPos
 
-  function run (scenario) {
-    currentScenario = scenario;
-    gridSize = Math.floor(Math.sqrt(scenario.grid[0].length));
-    playerPos = {
+  var FRAME_TIMER = 1000
+  var paused
+  var scenario
+
+  function run (newScenario) {
+    scenario = Utils.copy(newScenario);
+    scenario.playerPos = {
       x: scenario.start.x,
       y: scenario.start.y
     }
-
-    currentFrameIndex = -1;
-    progressAFrame()
-
-    if (currentScenario.grid.length > 1) {
-      frameTimer = setInterval(progressAFrame, 2000);
-    }
+    progressAFrame();
+    frameTimer = setInterval(progressAFrame, FRAME_TIMER);
   }
 
   function progressAFrame () {
@@ -30,7 +21,7 @@ function ScenarioRunner(stateChange, win, lose) {
     }
     currentFrame = currentScenario.grid[currentFrameIndex]
 
-    triggerStateChange(convertPosToIndex(playerPos))
+    move('stay');
   }
 
   function triggerStateChange (playerIndex) {
@@ -54,7 +45,8 @@ function ScenarioRunner(stateChange, win, lose) {
       up: {x:0, y:-1},
       down: {x:0, y:1},
       left: {x:-1, y:0},
-      right: {x:1, y:0}
+      right: {x:1, y:0},
+      stay: {x:0, y:0}
     }
     var newCellPos = {
       x: playerPos.x + dirs[dir].x,

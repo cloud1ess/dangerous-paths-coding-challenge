@@ -1,10 +1,12 @@
-function ScenarioView (panel) {
+function ScenarioView (parentPanel) {
 
-  var gridPanel = new Panel(panel)
-  var CELL_SIZE = 32
-  var STROKE = 1
-  var CANVAS_SIZE = 600
-  var HALF_CANVAS_SIZE = CANVAS_SIZE/2
+  var backgroundPanel = new Panel(parentPanel);
+  var cellPanel = new Panel(parentPanel);
+  var foregroundPanel = new Panel(parentPanel);
+  var CELL_SIZE = 32;
+  var STROKE = 1;
+  var CANVAS_SIZE = 640;
+  var HALF_CANVAS_SIZE = CANVAS_SIZE/2;
 
   var cellTypes = {
     0: '#e2e2e2',
@@ -13,88 +15,86 @@ function ScenarioView (panel) {
     x: '#33cc33'
   }
 
-  panel.drawStrokeRect({
-    x: STROKE,
-    y: STROKE,
-    wid: CANVAS_SIZE - (2*STROKE),
-    hei: CANVAS_SIZE - (2*STROKE),
-    lineWidth: 2*STROKE,
-    colour: '#888888'
-  });
-  panel.render();
+  var xPos = 0, yPos = 0;
+  var max = Math.ceil(CANVAS_SIZE/CELL_SIZE)
 
-  function renderCell (type, x, y) {
-    gridPanel.drawRect({
-      x: (CELL_SIZE * x) + STROKE,
-      y: (CELL_SIZE * y) + STROKE,
+  while (yPos <= max) {
+    renderCell(
+      {type: '0', x: xPos, y: yPos },
+      backgroundPanel
+    );
+    xPos ++
+    if (xPos > max) {
+      xPos = 0;
+      yPos ++
+    }
+  }
+  parentPanel.render();
+
+  function renderCell (cell, panel) {
+    panel.drawRect({
+      x: (CELL_SIZE * cell.x) + STROKE,
+      y: (CELL_SIZE * cell.y) + STROKE,
       wid: CELL_SIZE - (2 * STROKE),
       hei: CELL_SIZE - (2 * STROKE),
-      colour: cellTypes[type]
+      colour: cellTypes[cell.type]
     })
   }
 
   function update (state) {
-    gridPanel.clear();
     var columns = Math.floor(Math.sqrt(state.length));
-    gridPanel.setPos({
+    cellPanel.clear();
+    cellPanel.setPos({
       x: HALF_CANVAS_SIZE-(columns*CELL_SIZE*0.5),
       y: HALF_CANVAS_SIZE-(columns*CELL_SIZE*0.5)
     })
     var x, y;
 
-    for (var i=0; i<state.length; i++){
-      x = i%columns;
-      y = Math.floor(i/columns);
-      renderCell(state[i], x, y);
+    for (var i=0; i<state.cells.length; i++){
+      renderCell(state.cells[i], cellPanel);
     }
-    panel.render();
+    renderCell(state.playerCell, cellPanel);
+
+    parentPanel.render();
   }
 
   function scenarioName (name) {
-    panel.drawText({
+    foregroundPanel.drawText({
       text: name,
       x:6,
       y:40,
       font: "40px Arial",
       colour: '#444444',
     });
-    panel.render();
+    parentPanel.render();
   }
 
   function win () {
-    panel.drawText({
+    foregroundPanel.drawText({
       text: 'Win',
       x:6,
       y:124,
       font: "100px Arial",
       colour: '#444444',
     });
-    panel.render();
+    parentPanel.render();
   }
 
   function lose () {
-    panel.drawText({
+    foregroundPanel.drawText({
       text: 'Lose',
       x:6,
       y:124,
       font: "100px Arial",
       colour: '#444444',
     });
-    panel.render();
+    parentPanel.render();
   }
 
   function reset () {
-    gridPanel.clear();
-    panel.clear();
-    panel.drawStrokeRect({
-      x: STROKE,
-      y: STROKE,
-      wid: CANVAS_SIZE - (2*STROKE),
-      hei: CANVAS_SIZE - (2*STROKE),
-      lineWidth: 2*STROKE,
-      colour: '#888888'
-    });
-    panel.render();
+    cellPanel.clear();
+    foregroundPanel.clear();
+    parentPanel.render();
   }
 
   return {

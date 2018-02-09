@@ -49,8 +49,8 @@
 
   function createCanvasPanel () {
     var gameCanvas = Utils.createElement('canvas', null);
-    gameCanvas.width = 600;
-    gameCanvas.height = 600;
+    gameCanvas.width = 640;
+    gameCanvas.height = 640;
 
     return new Panel(null, gameCanvas, true);
   }
