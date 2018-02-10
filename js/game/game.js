@@ -6,7 +6,7 @@ function Game(panel, scenarioFinished) {
 
   function runScenario(index, userInputNeeded) {
     reset()
-    runner.run(Scenarios[index]);
+    runner.run(index);
     view.scenarioName("Scenario "+index);
     if (userInputNeeded) {
       userInput = UserInput(runner.move);

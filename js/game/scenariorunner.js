@@ -3,9 +3,11 @@ function ScenarioRunner(stateChange, win, lose) {
   var FRAME_TIMER = 1000
   var paused
   var scenario
+  var frameTimer
 
   function run (newScenario) {
-    scenario = Utils.copy(newScenario);
+    scenario = Utils.copy(Scenarios[newScenario]);
+    scenario.frame = -1
     scenario.playerPos = {
       x: scenario.start.x,
       y: scenario.start.y
@@ -15,26 +17,8 @@ function ScenarioRunner(stateChange, win, lose) {
   }
 
   function progressAFrame () {
-    currentFrameIndex++
-    if (currentFrameIndex >= currentScenario.grid.length) {
-      currentFrameIndex = 0;
-    }
-    currentFrame = currentScenario.grid[currentFrameIndex]
-
+    scenario.frame ++;
     move('stay');
-  }
-
-  function triggerStateChange (playerIndex) {
-    var stateWithPlayerAdded = Utils.replaceCharAt(currentFrame, playerIndex, 'p');
-
-    stateChange(stateWithPlayerAdded);
-  }
-
-  function pause () {
-    paused = true;
-    if (frameTimer) {
-      clearInterval(frameTimer)
-    }
   }
 
   function move (dir) {
@@ -48,44 +32,47 @@ function ScenarioRunner(stateChange, win, lose) {
       right: {x:1, y:0},
       stay: {x:0, y:0}
     }
-    var newCellPos = {
-      x: playerPos.x + dirs[dir].x,
-      y: playerPos.y + dirs[dir].y
-    }
 
-    playerPos = newCellPos;
-    var playerPosStr = convertPosToIndex(playerPos);
+    scenario.playerPos.x += dirs[dir].x
+    scenario.playerPos.y += dirs[dir].y
 
-    triggerStateChange(playerPosStr);
-
-    if (!canSurviveOnCell(playerPosStr)) {
+    stateChange(scenario);
+    var outcome = getCellProperties(scenario.playerPos);
+    if (outcome === 'die') {
       pause();
       lose();
-    } else if (isWinningCell(playerPosStr)){
+    } else if (outcome === 'win'){
       pause();
       win();
     }
   }
 
-  function convertPosToIndex (pos) {
-    return Math.min(currentFrame.length-1, Math.max(0,(pos.y * gridSize) + pos.x))
+  function getCellProperties (pos) {
+    if (positionsAreSame(pos, scenario.finish)) {
+      return 'win'
+    }
+    var cells = scenario.cells, cellToCheck;
+    for (var i=0; i<cells.length; i++) {
+      cellToCheck = cells[i];
+      if (Array.isArray(cellToCheck)) {
+        cellToCheck = cellToCheck[scenario.frame%cellToCheck.length];
+      }
+
+      if (positionsAreSame(pos, cellToCheck)) {
+        return 'live'
+      }
+    }
+    return 'die'
   }
 
-  function canSurviveOnCell (playerIndex) {
-    return currentFrame[playerIndex] !== '0'
+  function positionsAreSame (pos1, pos2) {
+    return pos1.x === pos2.x && pos1.y === pos2.y;
   }
 
-  function isWinningCell (playerIndex) {
-    return currentFrame[playerIndex] === 'x'
-  }
-
-  function getCellProperties (x, y) {
-    var cell = currentFrame[convertPosToIndex({x:x, y:y})];
-
-    switch (cell) {
-      case '0': return 'die'; break;
-      case '1': return 'live'; break;
-      case 'x': return 'win'; break;
+  function pause () {
+    paused = true;
+    if (frameTimer) {
+      clearInterval(frameTimer)
     }
   }
 
@@ -102,7 +89,6 @@ function ScenarioRunner(stateChange, win, lose) {
 
   return {
     run: run,
-    pause: pause,
     move: move,
     reset: reset,
     getCellProperties: getCellProperties

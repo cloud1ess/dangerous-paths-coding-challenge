@@ -9,10 +9,10 @@ function ScenarioView (parentPanel) {
   var HALF_CANVAS_SIZE = CANVAS_SIZE/2;
 
   var cellTypes = {
-    0: '#e2e2e2',
-    1: '#888888',
-    p: '#0099cc',
-    x: '#33cc33'
+    death: '#e2e2e2',
+    cell: '#888888',
+    player: '#0099cc',
+    finish: '#33cc33'
   }
 
   var xPos = 0, yPos = 0;
@@ -20,7 +20,7 @@ function ScenarioView (parentPanel) {
 
   while (yPos <= max) {
     renderCell(
-      {type: '0', x: xPos, y: yPos },
+      {type: 'death', x: xPos, y: yPos },
       backgroundPanel
     );
     xPos ++
@@ -31,29 +31,34 @@ function ScenarioView (parentPanel) {
   }
   parentPanel.render();
 
-  function renderCell (cell, panel) {
+  function renderCell (cell, panel, type, shrink) {
+    shrink = shrink || 0;
     panel.drawRect({
-      x: (CELL_SIZE * cell.x) + STROKE,
-      y: (CELL_SIZE * cell.y) + STROKE,
-      wid: CELL_SIZE - (2 * STROKE),
-      hei: CELL_SIZE - (2 * STROKE),
-      colour: cellTypes[cell.type]
+      x: (CELL_SIZE * cell.x) + STROKE + shrink,
+      y: (CELL_SIZE * cell.y) + STROKE + shrink,
+      wid: CELL_SIZE - (2 * (STROKE + shrink)),
+      hei: CELL_SIZE - (2 * (STROKE + shrink)),
+      colour: cellTypes[type || 'death']
     })
   }
 
-  function update (state) {
-    var columns = Math.floor(Math.sqrt(state.length));
+  function update (scenarioState) {
     cellPanel.clear();
     cellPanel.setPos({
-      x: HALF_CANVAS_SIZE-(columns*CELL_SIZE*0.5),
-      y: HALF_CANVAS_SIZE-(columns*CELL_SIZE*0.5)
+      x: HALF_CANVAS_SIZE-(Math.floor(scenarioState.size.w*0.5)*CELL_SIZE),
+      y: HALF_CANVAS_SIZE-(Math.floor(scenarioState.size.h*0.5)*CELL_SIZE)
     })
-    var x, y;
+    var x, y, cellToRender;
 
-    for (var i=0; i<state.cells.length; i++){
-      renderCell(state.cells[i], cellPanel);
+    for (var i=0; i<scenarioState.cells.length; i++){
+      cellToRender = scenarioState.cells[i];
+      if (Array.isArray(cellToRender)) {
+        cellToRender = cellToRender[scenarioState.frame%cellToRender.length];
+      }
+      renderCell(cellToRender, cellPanel, 'cell');
     }
-    renderCell(state.playerCell, cellPanel);
+    renderCell(scenarioState.finish, cellPanel, 'finish');
+    renderCell(scenarioState.playerPos, cellPanel, 'player', 3);
 
     parentPanel.render();
   }
