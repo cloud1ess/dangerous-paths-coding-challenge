@@ -17,7 +17,7 @@ function ScenarioRunner(stateChange, win, lose) {
   }
 
   function progressAFrame () {
-    scenario.frame ++;
+    scenario.frame++;
     move('stay');
   }
 
@@ -25,31 +25,35 @@ function ScenarioRunner(stateChange, win, lose) {
     if (paused) {
       return;
     }
-    var dirs = {
-      up: {x:0, y:-1},
-      down: {x:0, y:1},
-      left: {x:-1, y:0},
-      right: {x:1, y:0},
-      stay: {x:0, y:0}
+    if (scenario.onMover && dir === 'stay') {
+      scenario.playerPos = getNextMoverPos(scenario.playerPos);
+
+    } else if (dir !== 'stay'){
+      var dirs = {
+        up: {x:0, y:-1},
+        down: {x:0, y:1},
+        left: {x:-1, y:0},
+        right: {x:1, y:0}
+      }
+      scenario.playerPos.x += dirs[dir].x
+      scenario.playerPos.y += dirs[dir].y
     }
 
-    scenario.playerPos.x += dirs[dir].x
-    scenario.playerPos.y += dirs[dir].y
-
     stateChange(scenario);
-    var outcome = getCellProperties(scenario.playerPos);
-    if (outcome === 'die') {
+    var outcome = getCellType(scenario.playerPos);
+    if (outcome === 'empty') {
       pause();
-      lose();
-    } else if (outcome === 'win'){
+      lose();      
+    } else if (outcome === 'finish') {
       pause();
       win();
     }
+    scenario.onMover = outcome === 'mover';
   }
 
-  function getCellProperties (pos) {
+  function getCellType (pos) {
     if (positionsAreSame(pos, scenario.finish)) {
-      return 'win'
+      return 'finish'
     }
     var cells = scenario.cells, cellToCheck;
     for (var i=0; i<cells.length; i++) {
@@ -59,10 +63,25 @@ function ScenarioRunner(stateChange, win, lose) {
       }
 
       if (positionsAreSame(pos, cellToCheck)) {
-        return 'live'
+        return Array.isArray(cells[i])? 'mover':'path'
       }
     }
-    return 'die'
+    return 'empty'
+  }
+
+  function getNextMoverPos () {
+    var cells = scenario.cells,
+        cellToCheck
+
+    for (var i=0; i<cells.length; i++) {
+      cellToCheck = cells[i];
+      if (Array.isArray(cellToCheck) && positionsAreSame(scenario.playerPos, cellToCheck[Math.max(0,scenario.frame-1)%cellToCheck.length])) {
+        return {
+          x: cellToCheck[scenario.frame%cellToCheck.length].x,
+          y: cellToCheck[scenario.frame%cellToCheck.length].y
+        }
+      }
+    }
   }
 
   function positionsAreSame (pos1, pos2) {
@@ -91,6 +110,6 @@ function ScenarioRunner(stateChange, win, lose) {
     run: run,
     move: move,
     reset: reset,
-    getCellProperties: getCellProperties
+    getCellType: getCellType
   }
 }

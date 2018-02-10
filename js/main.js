@@ -25,7 +25,7 @@
     game.runScenario(index, false)
     solutions.runScenario(index, {
       move: game.move,
-      getCellProperties: game.getCellProperties
+      getCellType: game.getCellType
     });
     timeout = setTimeout(function () {
       scenarioFinished(false);

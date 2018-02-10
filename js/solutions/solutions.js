@@ -4,7 +4,7 @@ function Solutions () {
 
   function runScenario (index, api) {
     // api.move(dir) dir = up/down/left/right
-    // api.getCellProperties(x, y) returns live/die/win
+    // api.getCellType(x, y) returns empty/path/finish/mover
 
     if (timeout) {
       clearInterval(timeout)
