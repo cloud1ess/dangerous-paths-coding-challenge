@@ -25,11 +25,11 @@ function ScenarioRunner(stateChange, win, lose) {
   }
 
   function progressAFrame () {
-    scenario.frame++;
     if (scenario.onMover) {
       scenario.playerPos = getNextMoverPos();
     }
-    setAllRandomCells(Scenarios[scenarioIndex])
+    scenario.frame++;
+    scenario.frameCells = generateFrameCells();
 
     stateHasUpdated();
   }
@@ -45,7 +45,6 @@ function ScenarioRunner(stateChange, win, lose) {
   }
 
   function stateHasUpdated () {
-    stateChange(scenario);
     var outcome = getCellType(scenario.playerPos);
     if (outcome === 'empty') {
       pause();
@@ -55,26 +54,18 @@ function ScenarioRunner(stateChange, win, lose) {
       win();
     }
     scenario.onMover = outcome === 'mover';
+    stateChange(scenario);
   }
 
   function getCellType (pos) {
     if (positionsAreSame(pos, scenario.finish)) {
       return 'finish'
     }
-    var cells = scenario.cells, cellToCheck;
-    for (var i=0; i<cells.length; i++) {
-      cellToCheck = cells[i];
-      if (Array.isArray(cellToCheck)) {
-        cellToCheck = cellToCheck[scenario.frame%cellToCheck.length];
-      }
+    var frameCells = scenario.frameCells;
 
-      if (cellToCheck && positionsAreSame(pos, cellToCheck)) {
-        if (isRandomCell()) {
-
-        } else {
-
-        }
-        return Array.isArray(cells[i]) && !cellIsRandom() && !cellDissapears() ? 'mover' : 'path'
+    for (var i=0; i<frameCells.length; i++) {
+      if (positionsAreSame(pos, frameCells[i])) {
+        return frameCells[i].mover? 'mover':'path'
       }
     }
     return 'empty'
@@ -85,34 +76,57 @@ function ScenarioRunner(stateChange, win, lose) {
       x: scenario.playerPos.x + DIRS[dir].x,
       x: scenario.playerPos.y + DIRS[dir].y
     }
-    return getCellType(newPos)
+    var map = {
+      finish: 'win',
+      path: 'live',
+      mover: 'live',
+      empty: 'die'
+    }
+    return map[getCellType(newPos)]
   }
 
   function getNextMoverPos () {
-    var cells = scenario.cells,
-        cellToCheck
-
-    for (var i=0; i<cells.length; i++) {
-      cellToCheck = cells[i];
-      if (Array.isArray(cellToCheck) && positionsAreSame(scenario.playerPos, cellToCheck[Math.max(0,scenario.frame-1)%cellToCheck.length])) {
-        return {
-          x: cellToCheck[scenario.frame%cellToCheck.length].x,
-          y: cellToCheck[scenario.frame%cellToCheck.length].y
-        }
+    scenario.movers.forEach(function (mover) {
+      if (positionsAreSame(scenario.playerPos, mover[scenario.frame%mover.length])){
+        return mover[(scenario.frame+1)%mover.length]
       }
-    }
+    });
   }
 
-  function setAllRandomCells (original) {
-    var cells = original.cells,
-        cellToCheck
+  function generateFrameCells () {
+    var original = Scenarios[scenarioIndex],
+        frameCells = Utils.copy(original.path),
+        cellToCheck,
+        frame
 
-    for (var i=0; i<cells.length; i++) {
-      cellToCheck = cells[i];
-      if (Array.isArray(cellToCheck) && cellToCheck.length === 1) {
-        scenario.cells[i] = Math.random() > 0.5 ? cells[i][0] : null;
-      }
+    if (original.dissaprearing) {
+      original.dissaprearing.forEach(function (dissaprearing) {
+        frame = scenario.frame%dissaprearing.length
+        if (dissaprearing[frame]){
+          frameCells.push(dissaprearing[frame]);
+        }
+      });
     }
+
+    if (original.random) {
+      original.random.forEach(function (random) {
+        if (Math.random() > 0.5){
+          frameCells.push(random);
+        }
+      });
+    }
+
+    if (original.mover) {
+      original.mover.forEach(function (mover) {
+        frame = scenario.frame%mover.length;
+        frameCells.push({
+          x: mover[frame].x,
+          y: mover[frame].y,
+          mover: true
+        });
+      });
+    }
+    return frameCells;
   }
 
   function positionsAreSame (pos1, pos2) {

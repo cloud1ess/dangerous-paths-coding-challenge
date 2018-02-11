@@ -12,7 +12,8 @@ function ScenarioView (parentPanel) {
     death: '#e2e2e2',
     cell: '#888888',
     player: '#0099cc',
-    finish: '#33cc33'
+    finish: '#33cc33',
+    mover: '#666666'
   }
 
   var xPos = 0, yPos = 0;
@@ -50,14 +51,8 @@ function ScenarioView (parentPanel) {
     })
     var x, y, cellToRender;
 
-    for (var i=0; i<scenarioState.cells.length; i++){
-      cellToRender = scenarioState.cells[i];
-      if (Array.isArray(cellToRender)) {
-        cellToRender = cellToRender[scenarioState.frame%cellToRender.length];
-      }
-      if (cellToRender && (cellToRender.x || cellToRender.x === 0) && (cellToRender.y || cellToRender.y === 0)) {
-        renderCell(cellToRender, cellPanel, 'cell');
-      }
+    for (var i=0; i<scenarioState.frameCells.length; i++){
+      renderCell(scenarioState.frameCells[i], cellPanel, 'mover');
     }
     renderCell(scenarioState.finish, cellPanel, 'finish');
     renderCell(scenarioState.playerPos, cellPanel, 'player', 3);
