@@ -4,9 +4,17 @@ function ScenarioRunner(stateChange, win, lose) {
   var paused
   var scenario
   var frameTimer
+  var scenarioIndex
+  var DIRS = {
+    up: {x:0, y:-1},
+    down: {x:0, y:1},
+    left: {x:-1, y:0},
+    right: {x:1, y:0}
+  }
 
   function run (newScenario) {
-    scenario = Utils.copy(Scenarios[newScenario]);
+    scenarioIndex = newScenario;
+    scenario = Utils.copy(Scenarios[scenarioIndex]);
     scenario.frame = -1
     scenario.playerPos = {
       x: scenario.start.x,
@@ -18,32 +26,30 @@ function ScenarioRunner(stateChange, win, lose) {
 
   function progressAFrame () {
     scenario.frame++;
-    move('stay');
+    if (scenario.onMover) {
+      scenario.playerPos = getNextMoverPos();
+    }
+    setAllRandomCells(Scenarios[scenarioIndex])
+
+    stateHasUpdated();
   }
 
   function move (dir) {
     if (paused) {
       return;
     }
-    if (scenario.onMover && dir === 'stay') {
-      scenario.playerPos = getNextMoverPos(scenario.playerPos);
+    scenario.playerPos.x += DIRS[dir].x
+    scenario.playerPos.y += DIRS[dir].y
 
-    } else if (dir !== 'stay'){
-      var dirs = {
-        up: {x:0, y:-1},
-        down: {x:0, y:1},
-        left: {x:-1, y:0},
-        right: {x:1, y:0}
-      }
-      scenario.playerPos.x += dirs[dir].x
-      scenario.playerPos.y += dirs[dir].y
-    }
+    stateHasUpdated();
+  }
 
+  function stateHasUpdated () {
     stateChange(scenario);
     var outcome = getCellType(scenario.playerPos);
     if (outcome === 'empty') {
       pause();
-      lose();      
+      lose();
     } else if (outcome === 'finish') {
       pause();
       win();
@@ -62,11 +68,24 @@ function ScenarioRunner(stateChange, win, lose) {
         cellToCheck = cellToCheck[scenario.frame%cellToCheck.length];
       }
 
-      if (positionsAreSame(pos, cellToCheck)) {
-        return Array.isArray(cells[i])? 'mover':'path'
+      if (cellToCheck && positionsAreSame(pos, cellToCheck)) {
+        if (isRandomCell()) {
+
+        } else {
+
+        }
+        return Array.isArray(cells[i]) && !cellIsRandom() && !cellDissapears() ? 'mover' : 'path'
       }
     }
     return 'empty'
+  }
+
+  function whatsTheOutcome (dir) {
+    var newPos = {
+      x: scenario.playerPos.x + DIRS[dir].x,
+      x: scenario.playerPos.y + DIRS[dir].y
+    }
+    return getCellType(newPos)
   }
 
   function getNextMoverPos () {
@@ -80,6 +99,18 @@ function ScenarioRunner(stateChange, win, lose) {
           x: cellToCheck[scenario.frame%cellToCheck.length].x,
           y: cellToCheck[scenario.frame%cellToCheck.length].y
         }
+      }
+    }
+  }
+
+  function setAllRandomCells (original) {
+    var cells = original.cells,
+        cellToCheck
+
+    for (var i=0; i<cells.length; i++) {
+      cellToCheck = cells[i];
+      if (Array.isArray(cellToCheck) && cellToCheck.length === 1) {
+        scenario.cells[i] = Math.random() > 0.5 ? cells[i][0] : null;
       }
     }
   }
@@ -110,6 +141,6 @@ function ScenarioRunner(stateChange, win, lose) {
     run: run,
     move: move,
     reset: reset,
-    getCellType: getCellType
+    whatsTheOutcome: whatsTheOutcome
   }
 }

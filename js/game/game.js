@@ -7,7 +7,7 @@ function Game(panel, scenarioFinished) {
   function runScenario(index, userInputNeeded) {
     reset()
     runner.run(index);
-    view.scenarioName("Scenario "+index);
+    view.scenarioName(index);
     if (userInputNeeded) {
       userInput = UserInput(runner.move);
     }
@@ -35,7 +35,7 @@ function Game(panel, scenarioFinished) {
   return {
     runScenario : runScenario,
     move: runner.move,
-    getCellType: runner.getCellType,
+    whatsTheOutcome: runner.whatsTheOutcome,
     reset : reset
   }
 }

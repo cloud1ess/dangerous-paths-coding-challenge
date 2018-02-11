@@ -55,7 +55,9 @@ function ScenarioView (parentPanel) {
       if (Array.isArray(cellToRender)) {
         cellToRender = cellToRender[scenarioState.frame%cellToRender.length];
       }
-      renderCell(cellToRender, cellPanel, 'cell');
+      if (cellToRender && (cellToRender.x || cellToRender.x === 0) && (cellToRender.y || cellToRender.y === 0)) {
+        renderCell(cellToRender, cellPanel, 'cell');
+      }
     }
     renderCell(scenarioState.finish, cellPanel, 'finish');
     renderCell(scenarioState.playerPos, cellPanel, 'player', 3);
@@ -63,7 +65,8 @@ function ScenarioView (parentPanel) {
     parentPanel.render();
   }
 
-  function scenarioName (name) {
+  function scenarioName (index) {
+    var name = 'Scenario '+(index+1)+': '+Scenarios[index].name
     foregroundPanel.drawText({
       text: name,
       x:6,
