@@ -10,10 +10,12 @@ function ScenarioView (parentPanel) {
 
   var cellTypes = {
     death: '#e2e2e2',
-    cell: '#888888',
+    path: '#888888',
     player: '#0099cc',
     finish: '#33cc33',
-    mover: '#666666'
+    random: '#c653c6',
+    dissapearing: '#a6a6a6',
+    mover: '#cc9966'
   }
 
   var xPos = 0, yPos = 0;
@@ -52,7 +54,7 @@ function ScenarioView (parentPanel) {
     var x, y, cellToRender;
 
     for (var i=0; i<scenarioState.frameCells.length; i++){
-      renderCell(scenarioState.frameCells[i], cellPanel, 'mover');
+      renderCell(scenarioState.frameCells[i], cellPanel, scenarioState.frameCells[i].type || 'path');
     }
     renderCell(scenarioState.finish, cellPanel, 'finish');
     renderCell(scenarioState.playerPos, cellPanel, 'player', 3);

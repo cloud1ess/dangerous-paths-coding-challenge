@@ -65,7 +65,7 @@ function ScenarioRunner(stateChange, win, lose) {
 
     for (var i=0; i<frameCells.length; i++) {
       if (positionsAreSame(pos, frameCells[i])) {
-        return frameCells[i].mover? 'mover':'path'
+        return frameCells[i].type === 'mover'? 'mover':'path'
       }
     }
     return 'empty'
@@ -74,7 +74,7 @@ function ScenarioRunner(stateChange, win, lose) {
   function whatsTheOutcome (dir) {
     var newPos = {
       x: scenario.playerPos.x + DIRS[dir].x,
-      x: scenario.playerPos.y + DIRS[dir].y
+      y: scenario.playerPos.y + DIRS[dir].y
     }
     var map = {
       finish: 'win',
@@ -86,11 +86,16 @@ function ScenarioRunner(stateChange, win, lose) {
   }
 
   function getNextMoverPos () {
-    var mover = scenario.mover;
+    var movers = scenario.movers;
+    var mover;
 
-    for(var i=0; i<mover.length; i++) {
-      if (positionsAreSame(scenario.playerPos, mover[i][scenario.frame%mover[i].length])){
-        return mover[i][(scenario.frame+1)%mover[i].length]
+    for(var i=0; i<movers.length; i++) {
+      mover = movers[i];
+      if (positionsAreSame(scenario.playerPos, mover[scenario.frame%mover.length])){
+        return {
+          x: mover[(scenario.frame+1)%mover.length].x,
+          y: mover[(scenario.frame+1)%mover.length].y
+        }
       }
     }
   }
@@ -105,7 +110,11 @@ function ScenarioRunner(stateChange, win, lose) {
       original.dissaprearing.forEach(function (dissaprearing) {
         frame = scenario.frame%dissaprearing.length
         if (dissaprearing[frame]){
-          frameCells.push(dissaprearing[frame]);
+          frameCells.push({
+            x: dissaprearing[frame].x,
+            y: dissaprearing[frame].y,
+            type: 'dissapearing'
+          });
         }
       });
     }
@@ -113,18 +122,22 @@ function ScenarioRunner(stateChange, win, lose) {
     if (original.random) {
       original.random.forEach(function (random) {
         if (Math.random() > 0.5){
-          frameCells.push(random);
+          frameCells.push({
+            x: random.x,
+            y: random.y,
+            type: 'random'
+          });
         }
       });
     }
 
-    if (original.mover) {
-      original.mover.forEach(function (mover) {
+    if (original.movers) {
+      original.movers.forEach(function (mover) {
         frame = scenario.frame%mover.length;
         frameCells.push({
           x: mover[frame].x,
           y: mover[frame].y,
-          mover: true
+          type: 'mover'
         });
       });
     }

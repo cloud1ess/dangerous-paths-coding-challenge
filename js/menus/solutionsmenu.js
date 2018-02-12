@@ -23,7 +23,7 @@ function SolutionsMenu (parentElement, runScenario, viewScenario) {
       container.style = "padding:5px;";
 
       var scenarioIndex = Utils.createElement('span', container);
-      scenarioIndex.innerText = "Scenario "+index+": "+Scenarios[index].name;
+      scenarioIndex.innerText = "Scenario "+(index+1)+": "+Scenarios[index].name;
 
       var style = "padding-right:5px;font-size: 13pt; color: "
       style += passed.indexOf(index) >= 0? "#37883a;" : "#888888;"

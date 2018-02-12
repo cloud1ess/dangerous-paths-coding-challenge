@@ -14,19 +14,23 @@
   function runScenario (index, autoNext) {
     if (currentScenario || currentScenario === 0) {
       nextScenario = null;
-      scenarioLost();
+      solutions.stopScenario();
+      scenarioFinished(false);
     }
     currentScenario = index;
-    if (autoNext && currentScenario+1 < Scenarios.length) {
+    if (autoNext && currentScenario+1 < Scenarios.length && solutions['runScenario'+(currentScenario+2)]) {
       nextScenario = currentScenario+1;
     } else {
       nextScenario = null;
     }
     game.runScenario(index, false)
-    solutions.runScenario(index, {
-      move: game.move,
-      whatsTheOutcome: game.whatsTheOutcome
-    });
+    var solutionRunner = solutions['runScenario'+(index+1)];
+    if (solutionRunner){
+      solutionRunner({
+        move: game.move,
+        whatsTheOutcome: game.whatsTheOutcome
+      });
+    }
     timeout = setTimeout(function () {
       scenarioFinished(false);
     }, 10000)
@@ -44,6 +48,7 @@
   }
 
   function viewScenario (index) {
+    solutions.stopScenario();
     game.runScenario(index, true)
   }
 
