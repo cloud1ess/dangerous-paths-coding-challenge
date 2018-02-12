@@ -148,12 +148,15 @@ var Scenarios = [
   },
   {
     name: 'Movers',
-    start:{x:0, y:1},
-    finish:{x:8, y:1},
-    size: {w:10, h:3},
+    start:{x:0, y:0},
+    finish:{x:6, y:0},
+    size: {w:7, h:1},
     path: [
+      {x:0, y:0},
+      {x:6, y:0}
     ],
-    movers: [
+    mover: [
+      [{x:1, y:0}, {x:2, y:0}, {x:3, y:0}, {x:4, y:0}, {x:5, y:0}]
     ]
   }
 ]

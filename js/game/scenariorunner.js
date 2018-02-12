@@ -38,8 +38,8 @@ function ScenarioRunner(stateChange, win, lose) {
     if (paused) {
       return;
     }
-    scenario.playerPos.x += DIRS[dir].x
-    scenario.playerPos.y += DIRS[dir].y
+    scenario.playerPos.x += DIRS[dir].x;
+    scenario.playerPos.y += DIRS[dir].y;
 
     stateHasUpdated();
   }
@@ -86,11 +86,13 @@ function ScenarioRunner(stateChange, win, lose) {
   }
 
   function getNextMoverPos () {
-    scenario.movers.forEach(function (mover) {
-      if (positionsAreSame(scenario.playerPos, mover[scenario.frame%mover.length])){
-        return mover[(scenario.frame+1)%mover.length]
+    var mover = scenario.mover;
+
+    for(var i=0; i<mover.length; i++) {
+      if (positionsAreSame(scenario.playerPos, mover[i][scenario.frame%mover[i].length])){
+        return mover[i][(scenario.frame+1)%mover[i].length]
       }
-    });
+    }
   }
 
   function generateFrameCells () {
