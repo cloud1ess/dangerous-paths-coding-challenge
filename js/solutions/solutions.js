@@ -138,6 +138,10 @@ function Solutions () {
       clearInterval(interval);
     }
     interval = setInterval(function () {
+      var route = RouteFinder(api.getCellTypeFromOffset);
+      if (route) {
+        PerformRoute(route, api.move);
+      }
       // Try and find a route to the finish
 
       // If there is one take it
@@ -160,7 +164,7 @@ function Solutions () {
       //     break;
       //   }
       // }
-    }, 50);
+    }, 70);
   }
 
   function runScenario8 () {
