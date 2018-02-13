@@ -1,10 +1,6 @@
 function ScenarioRunner(stateChange, win, lose) {
 
   var FRAME_TIMER = 1000
-  var paused
-  var scenario
-  var frameTimer
-  var scenarioIndex
   var DIRS = {
     up: {x:0, y:-1},
     down: {x:0, y:1},
@@ -12,31 +8,38 @@ function ScenarioRunner(stateChange, win, lose) {
     right: {x:1, y:0}
   }
 
+  var paused
+  var scenario
+  var frameTimer
+  var scenarioIndex
+
   function run (newScenario) {
     scenarioIndex = newScenario;
     scenario = Utils.copy(Scenarios[scenarioIndex]);
-    scenario.frame = -1
+    scenario.frame = Math.floor(Math.random()*4)
     scenario.playerPos = {
       x: scenario.start.x,
       y: scenario.start.y
     }
+    scenario.collapsed = [];
     progressAFrame();
     frameTimer = setInterval(progressAFrame, FRAME_TIMER);
   }
 
   function progressAFrame () {
-    if (scenario.onMover) {
-      scenario.playerPos = getNextMoverPos();
-    }
+    if (paused) return;
+
     scenario.frame++;
-    scenario.frameCells = generateFrameCells();
 
     stateHasUpdated();
   }
 
   function move (dir) {
-    if (paused) {
-      return;
+    if (paused) return;
+
+    var collapsingIndex = steppedOnACollapsingCell();
+    if (collapsingIndex >= 0) {
+      scenario.collapsed.push(collapsingIndex);
     }
     scenario.playerPos.x += DIRS[dir].x;
     scenario.playerPos.y += DIRS[dir].y;
@@ -45,6 +48,7 @@ function ScenarioRunner(stateChange, win, lose) {
   }
 
   function stateHasUpdated () {
+    scenario.frameCells = generateFrameCells();
     var outcome = getCellType(scenario.playerPos);
     if (outcome === 'empty') {
       pause();
@@ -53,7 +57,6 @@ function ScenarioRunner(stateChange, win, lose) {
       pause();
       win();
     }
-    scenario.onMover = outcome === 'mover';
     stateChange(scenario);
   }
 
@@ -65,39 +68,19 @@ function ScenarioRunner(stateChange, win, lose) {
 
     for (var i=0; i<frameCells.length; i++) {
       if (positionsAreSame(pos, frameCells[i])) {
-        return frameCells[i].type === 'mover'? 'mover':'path'
+        return frameCells[i].type || 'path'
       }
     }
     return 'empty'
   }
 
-  function whatsTheOutcome (dir) {
-    var newPos = {
-      x: scenario.playerPos.x + DIRS[dir].x,
-      y: scenario.playerPos.y + DIRS[dir].y
+  function getCellTypeFromOffset (offset) {
+    offset = offset || {x:0, y:0};
+    var pos = {
+      x: scenario.playerPos.x + (offset.x || 0),
+      y: scenario.playerPos.y + (offset.y || 0)
     }
-    var map = {
-      finish: 'win',
-      path: 'live',
-      mover: 'live',
-      empty: 'die'
-    }
-    return map[getCellType(newPos)]
-  }
-
-  function getNextMoverPos () {
-    var movers = scenario.movers;
-    var mover;
-
-    for(var i=0; i<movers.length; i++) {
-      mover = movers[i];
-      if (positionsAreSame(scenario.playerPos, mover[scenario.frame%mover.length])){
-        return {
-          x: mover[(scenario.frame+1)%mover.length].x,
-          y: mover[(scenario.frame+1)%mover.length].y
-        }
-      }
-    }
+    return getCellType(pos)
   }
 
   function generateFrameCells () {
@@ -106,42 +89,44 @@ function ScenarioRunner(stateChange, win, lose) {
         cellToCheck,
         frame
 
-    if (original.dissaprearing) {
-      original.dissaprearing.forEach(function (dissaprearing) {
-        frame = scenario.frame%dissaprearing.length
-        if (dissaprearing[frame]){
+    if (original.disappearing) {
+      original.disappearing.forEach(function (disappearing) {
+        frame = scenario.frame%disappearing.length
+        if (disappearing[frame]){
           frameCells.push({
-            x: dissaprearing[frame].x,
-            y: dissaprearing[frame].y,
+            x: disappearing[frame].x,
+            y: disappearing[frame].y,
             type: 'dissapearing'
           });
         }
       });
     }
 
-    if (original.random) {
-      original.random.forEach(function (random) {
-        if (Math.random() > 0.5){
+    if (original.collapsing) {
+      original.collapsing.forEach(function (collapser, index) {
+        if (scenario.collapsed.indexOf(index) === -1) {
           frameCells.push({
-            x: random.x,
-            y: random.y,
-            type: 'random'
+            x: collapser.x,
+            y: collapser.y,
+            type: 'collapser'
           });
         }
       });
     }
 
-    if (original.movers) {
-      original.movers.forEach(function (mover) {
-        frame = scenario.frame%mover.length;
-        frameCells.push({
-          x: mover[frame].x,
-          y: mover[frame].y,
-          type: 'mover'
-        });
-      });
-    }
     return frameCells;
+  }
+
+  function steppedOnACollapsingCell () {
+    var collapsings = scenario.collapsing;
+    if (!collapsings) return -1;
+
+    for (var i=0; i<collapsings.length; i++) {
+      if (positionsAreSame(collapsings[i], scenario.playerPos)) {
+        return i
+      }
+    }
+    return -1;
   }
 
   function positionsAreSame (pos1, pos2) {
@@ -170,6 +155,6 @@ function ScenarioRunner(stateChange, win, lose) {
     run: run,
     move: move,
     reset: reset,
-    whatsTheOutcome: whatsTheOutcome
+    getCellTypeFromOffset: getCellTypeFromOffset
   }
 }

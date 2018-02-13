@@ -28,7 +28,7 @@
     if (solutionRunner){
       solutionRunner({
         move: game.move,
-        whatsTheOutcome: game.whatsTheOutcome
+        getCellTypeFromOffset: game.getCellTypeFromOffset
       });
     }
     clearTimeout(timeout);

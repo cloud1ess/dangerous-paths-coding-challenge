@@ -1,7 +1,9 @@
 function Solutions () {
 
-  var interval
+  // api.move(dir) dir = up/down/left/right
+  // api.getCellTypeFromOffset({x:0, y:0}) returns 'path/collapser/dissapearing/finish/empty'
 
+  var interval
   var DIRS = {
     up: {x:0, y:-1},
     down: {x:0, y:1},
@@ -115,7 +117,7 @@ function Solutions () {
   function waitForPath (dir, api, callback) {
     clearInterval(interval);
     interval = setInterval(function () {
-      if (api.whatsTheOutcome(dir) !== 'die') {
+      if (api.getCellTypeFromOffset(DIRS[dir]) !== 'empty') {
         clearInterval(interval);
         callback();
       }
@@ -135,31 +137,29 @@ function Solutions () {
     if (interval && interval !== 0) {
       clearInterval(interval);
     }
-    var moved = false
     interval = setInterval(function () {
-      moved = false
-      for (var i=0; i< dirsToTry.length; i++) {
-        outcome = api.whatsTheOutcome(dirsToTry[i]);
-        tempPos = {
-          x: pos.x + DIRS[dirsToTry[i]].x,
-          y: pos.y + DIRS[dirsToTry[i]].y
-        }
-        strPos = tempPos.x+'x'+tempPos.y;
-        if(outcome !== 'die' && !visited[strPos]) {
-          pos = tempPos;
-          visited[strPos] = true;
-          api.move(dirsToTry[i]);
-          if (outcome === 'win') {
-            clearInterval(interval);
-          }
-          moved = true;
-          break;
-        }
-      }
-      if (!moved) {
-        dirsToTry = dirsToTry.reverse();
-        visited = {};
-      }
+      // Try and find a route to the finish
+
+      // If there is one take it
+
+
+      // for (var i=0; i< dirsToTry.length; i++) {
+      //   outcome = api.getCellTypeFromOffset(DIRS[dirsToTry[i]]);
+      //   tempPos = {
+      //     x: pos.x + DIRS[dirsToTry[i]].x,
+      //     y: pos.y + DIRS[dirsToTry[i]].y
+      //   }
+      //   strPos = tempPos.x+'x'+tempPos.y;
+      //   if(outcome !== 'empty' && !visited[strPos]) {
+      //     pos = tempPos;
+      //     visited[strPos] = true;
+      //     api.move(dirsToTry[i]);
+      //     if (outcome === 'finish') {
+      //       clearInterval(interval);
+      //     }
+      //     break;
+      //   }
+      // }
     }, 50);
   }
 
@@ -173,9 +173,9 @@ function Solutions () {
   }
 
   return {
-    runScenario1: runScenario1,
-    runScenario2: runScenario2,
-    runScenario3: runScenario3,
+    runScenario1: runScenario7,
+    runScenario2: runScenario7,
+    runScenario3: runScenario7,
     runScenario4: runScenario7,
     runScenario5: runScenario7,
     runScenario6: runScenario7,

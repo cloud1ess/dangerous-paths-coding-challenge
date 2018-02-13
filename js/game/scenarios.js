@@ -47,7 +47,7 @@ var Scenarios = [
     ]
   },
   {
-    name: 'Dissaprearing',
+    name: 'Disappearing',
     start:{x:0, y:0},
     finish:{x:4, y:4},
     size: {w:6, h:5},
@@ -64,9 +64,9 @@ var Scenarios = [
       {x: 5, y: 4},
       {x: 4, y: 4}
     ],
-    dissaprearing: [
+    disappearing: [
       [null,{x: 2, y: 2}],
-      [{x: 4, y: 1},null]
+      [null,{x: 4, y: 1}]
     ]
   },
   {
@@ -106,7 +106,7 @@ var Scenarios = [
       {x: 6, y: 5},
       {x: 6, y: 4}
     ],
-    dissaprearing: [
+    disappearing: [
       [null, null, {x: 6, y: 3}, null],
       [null, null, {x: 2, y: 3}, null],
       [{x: 3, y: 2}, null],
@@ -118,7 +118,7 @@ var Scenarios = [
     ]
   },
   {
-    name: 'Unpredictable',
+    name: 'Collapsing',
     start:{x:0, y:1},
     finish:{x:8, y:1},
     size: {w:10, h:3},
@@ -127,73 +127,27 @@ var Scenarios = [
       {x: 1, y: 1},
       {x: 1, y: 0},
       {x: 1, y: 2},
-      {x: 3, y: 0},
-      {x: 3, y: 1},
-      {x: 3, y: 2},
-      {x: 5, y: 1},
-      {x: 5, y: 0},
-      {x: 5, y: 2},
       {x: 7, y: 0},
       {x: 7, y: 2},
       {x: 7, y: 1}
     ],
-    random: [
+    collapsing: [
       {x: 2, y: 0},
-      {x: 2, y: 2},
-      {x: 4, y: 1},
+      {x: 3, y: 0},
+      {x: 5, y: 0},
       {x: 6, y: 0},
+      {x: 2, y: 2},
+      {x: 3, y: 2},
+      {x: 5, y: 2},
       {x: 6, y: 2}
-    ]
-  },
-  {
-    name: 'Movers',
-    start:{x:0, y:0},
-    finish:{x:6, y:0},
-    size: {w:7, h:1},
-    path: [
-      {x:0, y:0},
-      {x:6, y:0}
     ],
-    movers: [
-      [{x:1, y:0}, {x:2, y:0}, {x:3, y:0}, {x:4, y:0}, {x:5, y:0}, {x:4, y:0}, {x:3, y:0}, {x:2, y:0}]
+    disappearing: [
+      [{x: 4, y: 0}, null],
+      [null, {x: 4, y: 2}]
     ]
   },
   {
     name: 'Commitment',
-    start:{x:0, y:2},
-    finish:{x:10, y:2},
-    size: {w:11, h:5},
-    path: [
-      {x:0, y:2},
-      {x:1, y:0},
-      {x:2, y:0},
-      {x:1, y:1},
-      {x:1, y:2},
-      {x:1, y:3},
-      {x:1, y:4},
-      {x:2, y:4},
-      {x:8, y:0},
-      {x:9, y:0},
-      {x:9, y:1},
-      {x:9, y:2},
-      {x:9, y:3},
-      {x:9, y:4},
-      {x:8, y:4},
-    ],
-    movers: [
-      [{x:3, y:0},{x:3, y:1},{x:3, y:2},{x:3, y:3},{x:3, y:4},{x:3, y:3},{x:3, y:2},{x:3, y:1}],
-      [{x:5, y:0},{x:5, y:1},{x:5, y:2},{x:5, y:3},{x:5, y:4},{x:5, y:3},{x:5, y:2},{x:5, y:1}],
-      [{x:7, y:0},{x:7, y:1},{x:7, y:2},{x:7, y:3},{x:7, y:4},{x:7, y:3},{x:7, y:2},{x:7, y:1}]
-    ],
-    random: [
-      {x:4, y:0},
-      {x:6, y:0},
-      {x:4, y:4},
-      {x:6, y:4}
-    ]
-  },
-  {
-    name: 'Dead End',
     start:{x:6, y:6},
     finish:{x:12, y:2},
     size: {w:14, h:13},
@@ -202,7 +156,6 @@ var Scenarios = [
 
       {x:6, y:4},
       {x:5, y:4},
-      {x:5, y:3},
       {x:5, y:2},
       {x:4, y:2},
       {x:4, y:1},
@@ -212,7 +165,6 @@ var Scenarios = [
 
       {x:6, y:8},
       {x:7, y:8},
-      {x:7, y:9},
       {x:7, y:10},
       {x:8, y:10},
       {x:8, y:11},
@@ -222,7 +174,6 @@ var Scenarios = [
 
       {x:4, y:6},
       {x:4, y:7},
-      {x:3, y:7},
       {x:2, y:7},
       {x:2, y:8},
       {x:1, y:8},
@@ -232,22 +183,23 @@ var Scenarios = [
 
       {x:8, y:6},
       {x:8, y:5},
-      {x:9, y:5},
       {x:10, y:5},
       {x:10, y:4},
       {x:11, y:4},
       {x:12, y:4},
       {x:12, y:3}
     ],
-    dissaprearing: [
+    disappearing: [
       [null, null, {x:6, y:7}, {x:6, y:7}],
       [{x:6, y:5}, {x:6, y:5}, null, null],
       [{x:5, y:6}, null, null, {x:5, y:6}],
       [null, {x:7, y:6}, {x:7, y:6}, null]
     ],
-    movers: [
-    ],
-    random: [
+    collapsing: [
+      {x:9, y:5},
+      {x:3, y:7},
+      {x:5, y:3},
+      {x:7, y:9}
     ]
   }
 ]

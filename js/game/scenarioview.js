@@ -13,9 +13,8 @@ function ScenarioView (parentPanel) {
     path: '#888888',
     player: '#0099cc',
     finish: '#33cc33',
-    random: '#c653c6',
-    dissapearing: '#a6a6a6',
-    mover: '#cc9966'
+    collapser: '#cc9966',
+    dissapearing: '#c653c6'
   }
 
   var xPos = 0, yPos = 0;
