@@ -31,6 +31,7 @@
         whatsTheOutcome: game.whatsTheOutcome
       });
     }
+    clearTimeout(timeout);
     timeout = setTimeout(function () {
       scenarioFinished(false);
     }, 10000)

@@ -112,18 +112,32 @@ function Solutions () {
     }
   }
 
-  var visited
+  function waitForPath (dir, api, callback) {
+    clearInterval(interval);
+    interval = setInterval(function () {
+      if (api.whatsTheOutcome(dir) !== 'die') {
+        clearInterval(interval);
+        callback();
+      }
+    }, 200)
+  }
 
   function runScenario7 (api) {
-    visited = {
+    var visited = {
       '0x0':true
     };
     var outcome;
-    var pos = {x:0, y:0}, tempPos,
-        strPos;
-    var dirsToTry = ['right', 'down', 'left', 'up']
+    var pos = {x:0, y:0},
+        tempPos,
+        strPos,
+        dirsToTry = ['right', 'down', 'left', 'up']
 
+    if (interval && interval !== 0) {
+      clearInterval(interval);
+    }
+    var moved = false
     interval = setInterval(function () {
+      moved = false
       for (var i=0; i< dirsToTry.length; i++) {
         outcome = api.whatsTheOutcome(dirsToTry[i]);
         tempPos = {
@@ -138,28 +152,30 @@ function Solutions () {
           if (outcome === 'win') {
             clearInterval(interval);
           }
+          moved = true;
+          break;
         }
       }
-    });
+      if (!moved) {
+        dirsToTry = dirsToTry.reverse();
+        visited = {};
+      }
+    }, 50);
   }
 
-  function waitForPath (dir, api, callback) {
-    interval = setInterval(function () {
-      if (api.whatsTheOutcome(dir) !== 'die') {
-        clearInterval(interval);
-        callback();
-      }
-    }, 200)
+  function runScenario8 () {
   }
 
   function stopScenario() {
-    clearInterval(interval);
+    if (interval && interval !== 0) {
+      clearInterval(interval);
+    }
   }
 
   return {
-    runScenario1: runScenario7,
-    runScenario2: runScenario7,
-    runScenario3: runScenario7,
+    runScenario1: runScenario1,
+    runScenario2: runScenario2,
+    runScenario3: runScenario3,
     runScenario4: runScenario7,
     runScenario5: runScenario7,
     runScenario6: runScenario7,

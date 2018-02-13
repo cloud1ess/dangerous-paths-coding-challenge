@@ -235,16 +235,17 @@ var Scenarios = [
       {x:9, y:5},
       {x:10, y:5},
       {x:10, y:4},
-      {x:11, y:4}
+      {x:11, y:4},
+      {x:12, y:4},
+      {x:12, y:3}
     ],
     dissaprearing: [
-      [{x:6, y:5}, null],
-      [{x:6, y:7}, null],
-      [null, {x:5, y:6}],
-      [null, {x:7, y:6}]
+      [null, null, {x:6, y:7}, {x:6, y:7}],
+      [{x:6, y:5}, {x:6, y:5}, null, null],
+      [{x:5, y:6}, null, null, {x:5, y:6}],
+      [null, {x:7, y:6}, {x:7, y:6}, null]
     ],
     movers: [
-      [{x:12,y:3}, {x:12,y:4}]
     ],
     random: [
     ]
