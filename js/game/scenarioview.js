@@ -14,7 +14,9 @@ function ScenarioView (parentPanel) {
     player: '#0099cc',
     finish: '#33cc33',
     collapser: '#cc9966',
-    dissapearing: '#c653c6'
+    dissapearing: '#c653c6',
+    checkpoint_visited: '#ff9900',
+    checkpoint: '#ff471a'
   }
 
   var xPos = 0, yPos = 0;

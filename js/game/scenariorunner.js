@@ -22,6 +22,7 @@ function ScenarioRunner(stateChange, win, lose) {
       y: scenario.start.y
     }
     scenario.collapsed = [];
+    scenario.checkpointsVisited = [];
     progressAFrame();
     frameTimer = setInterval(progressAFrame, FRAME_TIMER);
   }
@@ -44,16 +45,22 @@ function ScenarioRunner(stateChange, win, lose) {
     scenario.playerPos.x += DIRS[dir].x;
     scenario.playerPos.y += DIRS[dir].y;
 
+    var checkpointIndex = steppedOnACheckpoint();
+    if (checkpointIndex >= 0) {
+      scenario.checkpointsVisited[checkpointIndex] = true;
+    }
+
     stateHasUpdated();
   }
 
   function stateHasUpdated () {
-    scenario.frameCells = generateFrameCells();
+    scenario.frameCells = GenerateFrameCells (scenarioIndex, scenario.frame, scenario.collapsed, scenario.checkpointsVisited);
+
     var outcome = getCellType(scenario.playerPos);
     if (outcome === 'empty') {
       pause();
       lose();
-    } else if (outcome === 'finish') {
+    } else if (outcome === 'finish' && allCheckPointsHaveBeenReached()) {
       pause();
       win();
     }
@@ -83,40 +90,6 @@ function ScenarioRunner(stateChange, win, lose) {
     return getCellType(pos)
   }
 
-  function generateFrameCells () {
-    var original = Scenarios[scenarioIndex],
-        frameCells = Utils.copy(original.path),
-        cellToCheck,
-        frame
-
-    if (original.disappearing) {
-      original.disappearing.forEach(function (disappearing) {
-        frame = scenario.frame%disappearing.length
-        if (disappearing[frame]){
-          frameCells.push({
-            x: disappearing[frame].x,
-            y: disappearing[frame].y,
-            type: 'dissapearing'
-          });
-        }
-      });
-    }
-
-    if (original.collapsing) {
-      original.collapsing.forEach(function (collapser, index) {
-        if (scenario.collapsed.indexOf(index) === -1) {
-          frameCells.push({
-            x: collapser.x,
-            y: collapser.y,
-            type: 'collapser'
-          });
-        }
-      });
-    }
-
-    return frameCells;
-  }
-
   function steppedOnACollapsingCell () {
     var collapsings = scenario.collapsing;
     if (!collapsings) return -1;
@@ -127,6 +100,30 @@ function ScenarioRunner(stateChange, win, lose) {
       }
     }
     return -1;
+  }
+
+  function steppedOnACheckpoint () {
+    var checkpoints = Scenarios[scenarioIndex].checkpoints;
+    if (!checkpoints) return -1;
+
+    for (var i=0; i<checkpoints.length; i++) {
+      if (positionsAreSame(checkpoints[i], scenario.playerPos)) {
+        return i
+      }
+    }
+    return -1;
+  }
+
+  function allCheckPointsHaveBeenReached () {
+    var checkpoints = Scenarios[scenarioIndex].checkpoints;
+    if (!checkpoints) return true;
+
+    for (var i=0; i<checkpoints.length; i++) {
+      if (!scenario.checkpointsVisited[i]) {
+        return false
+      }
+    }
+    return true;
   }
 
   function positionsAreSame (pos1, pos2) {

@@ -12,18 +12,16 @@ function RouteFinder (getCellTypeFromOffset) {
     '-1x0': 'left',
     '0x1': 'down'
   }
-  var complete = false;
-  var currentPos = {x:0, y:0};
-  var currentRoute = [currentPos];
+  var outcome ;
+  var currentRoute = [{x:0, y:0}];
   var potentialRoutesToTry = [];
 
-  while (!complete) {
+  while (!outcome) {
     var possibilities = getNextPossibleMoves(currentRoute);
 
     if ((possibilities.x || possibilities.x === 0) && (possibilities.y || possibilities.y === 0)) {
       currentRoute.push(possibilities);
-      complete = true;
-      currentPos = null;
+      outcome = 'complete';
 
     } else if (possibilities.length >= 1) {
 
@@ -35,20 +33,17 @@ function RouteFinder (getCellTypeFromOffset) {
         }
       })
       currentRoute.push(possibilities[0]);
-      currentPos = possibilities[0];
 
     } else {
-      currentPos = null;
       if (potentialRoutesToTry.length) {
         currentRoute = potentialRoutesToTry.shift();
-        currentPos = currentRoute[currentRoute.length-1]
       } else {
-        complete = true;
+        outcome = 'fail';
       }
     }
   }
 
-  return complete? currentRoute.map(function (pos, index){
+  return outcome === 'complete'? currentRoute.map(function (pos, index){
     if (index > 0){
       var offset = {
         x:pos.x - currentRoute[index-1].x,
