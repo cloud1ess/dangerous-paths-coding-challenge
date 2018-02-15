@@ -1,4 +1,4 @@
-function ScenarioRunner(stateChange, win, lose) {
+function GameScenarioRunner(stateChange, win, lose) {
 
   var FRAME_TIMER = 1000
   var DIRS = {

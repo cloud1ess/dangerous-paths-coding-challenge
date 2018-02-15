@@ -1,9 +1,8 @@
 function SolutionsMenu (parentElement, runAll, runScenario, viewScenario) {
 
-  function update (progress) {
+  function update (progress, running) {
     var unlocked = progress.unlocked;
     var passed = progress.passed;
-    var running = progress.running;
     var highestUnlocked = progress.highestUnlocked;
 
     parentElement.innerHTML = '';
@@ -12,7 +11,7 @@ function SolutionsMenu (parentElement, runAll, runScenario, viewScenario) {
     var buttonText = document.createTextNode('Run All and Progess');
     runButton.appendChild(buttonText);
     runButton.onclick = function (evt) {
-      runAll();
+      runAll(unlocked);
     }
 
     for (var i=0; i<=highestUnlocked; i++) {

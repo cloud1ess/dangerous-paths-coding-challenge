@@ -1,7 +1,7 @@
 function Game(panel, scenarioFinished) {
 
-  var view = ScenarioView(panel);
-  var runner = ScenarioRunner(view.update, win, lose);
+  var view = GameView(panel);
+  var runner = GameScenarioRunner(view.update, win, lose);
   var userInput
 
   function runScenario(index, userInputNeeded) {

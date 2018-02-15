@@ -1,4 +1,4 @@
-function ScenarioView (parentPanel) {
+function GameView (parentPanel) {
 
   var backgroundPanel = new Panel(parentPanel);
   var cellPanel = new Panel(parentPanel);
