@@ -4,8 +4,10 @@
 
   var gamePanel = createCanvasPanel();
   var game = Game(gamePanel, scenarioFinished);
-  var solutionsMenu = SolutionsMenu(solutionsContainer, runScenario, viewScenario);
   var solutions = Solutions();
+  var scenariosProgress = ScenariosProgress();
+  var solutionsMenu = SolutionsMenu(solutionsContainer, runScenario, viewScenario);
+  solutionsMenu.update(scenariosProgress.getProgress());
 
   var currentScenario
   var nextScenario
@@ -40,7 +42,8 @@
   function scenarioFinished (won) {
     clearTimeout(timeout)
     if (currentScenario || currentScenario === 0) {
-      solutionsMenu.result(currentScenario, won);
+      scenariosProgress.result(currentScenario, won);
+      solutionsMenu.update(scenariosProgress.getProgress());
     }
     currentScenario = null;
     if (nextScenario) {

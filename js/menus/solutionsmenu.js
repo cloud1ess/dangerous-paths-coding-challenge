@@ -1,10 +1,9 @@
 function SolutionsMenu (parentElement, runScenario, viewScenario) {
 
-  var passed = [];
+  function update (progress) {
+    var unlocked = progress.unlocked;
+    var passed = progress.passed;
 
-  redraw()
-
-  function redraw () {
     parentElement.innerHTML = '';
 
     var runButton = Utils.createElement('button', parentElement);
@@ -14,7 +13,7 @@ function SolutionsMenu (parentElement, runScenario, viewScenario) {
       runScenario(0, true);
     }
 
-    for (var i=0; i<Scenarios.length; i++) {
+    for (var i=0; i<=unlocked; i++) {
       scenarioButtons(i);
     }
 
@@ -26,7 +25,7 @@ function SolutionsMenu (parentElement, runScenario, viewScenario) {
       scenarioIndex.innerText = "Scenario "+(index+1)+": "+Scenarios[index].name;
 
       var style = "padding-right:5px;font-size: 13pt; color: "
-      style += passed.indexOf(index) >= 0? "#37883a;" : "#888888;"
+      style += passed[index]? "#37883a;" : "#888888;"
       scenarioIndex.style = style
 
       var viewButton = Utils.createElement('button', container)
@@ -47,21 +46,7 @@ function SolutionsMenu (parentElement, runScenario, viewScenario) {
     }
   }
 
-  function result (index, pass) {
-    if (pass) {
-      if (passed.indexOf(index) === -1) {
-        passed.push(index);
-      }
-    } else {
-      if (passed.indexOf(index) >= 0) {
-        passed.splice(passed.indexOf(index), 1);
-      }
-    }
-
-    redraw()
-  }
-
   return {
-    result: result
+    update: update
   }
 }
