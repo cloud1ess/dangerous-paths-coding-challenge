@@ -1,33 +1,46 @@
 function ScenariosProgress () {
 
+  var passed = [];
   var unlocked = 0;
+  var runningScenario;
 
   function result (index, pass) {
-    passed[index] = pass;
-
-    unlocked = Math.max(checkUnlocked(), unlocked)
+    runningScenario = null;
   }
 
-  function checkUnlocked () {
-    var progress = 0;
-
-    for (var i=0; i<passed.length; i++) {
-      if (passed[i] && i === progress) {
-        progress++
-      }
+  function runAllResult (index, pass) {
+    result(index, pass);
+    if (pass) {
+      passed[index] = pass;
+      unlocked = Math.min(index+1, Scenarios.length-1);
     }
-    return progress
+  }
+
+  function running (index) {
+    if (runningScenario) {
+      passed[runningScenario] = false;
+    }
+    runningScenario = index;
+  }
+
+  function runningAll () {
+    passed = [];
   }
 
   function getProgress () {
     return {
       passed: Utils.copy(passed),
-      unlocked: unlocked
+      running: runningScenario,
+      unlocked: unlocked,
+      highestUnlocked: highestUnlocked
     }
   }
 
   return {
     result: result,
+    runAllResult: runAllResult,
+    running: running,
+    runningAll: runningAll,
     getProgress: getProgress
   }
 }

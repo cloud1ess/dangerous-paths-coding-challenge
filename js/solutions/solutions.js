@@ -5,35 +5,32 @@ function Solutions () {
 
   var interval
 
-  function runScenario (api) {
-    
-    if (interval && interval !== 0) {
-      clearInterval(interval);
+  function runSolution (index, api) {
+    if (interval) {
+      window.clearInterval(interval);
+      interval = null;
     }
-    interval = setInterval(function () {
+
+    interval = window.setInterval(function () {
+      console.log(index+" : "+interval)
       var route = RouteFinder(api.getCellTypeFromOffset);
       if (route) {
+        window.clearInterval(interval);
+        interval = null;
         PerformRoute(route, api.move);
-        clearInterval(interval);
       }
     }, 110);
   }
 
-  function stopScenario() {
+  function stopSolution() {
     if (interval && interval !== 0) {
-      clearInterval(interval);
+      window.clearInterval(interval);
+      interval = null;
     }
   }
 
   return {
-    runScenario1: runScenario,
-    runScenario2: runScenario,
-    runScenario3: runScenario,
-    runScenario4: runScenario,
-    runScenario5: runScenario,
-    runScenario6: runScenario,
-    runScenario7: runScenario,
-    runScenario8: runScenario,
-    stopScenario: stopScenario
+    runSolution: runSolution,
+    stopSolution: stopSolution
   }
 }
