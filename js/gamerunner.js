@@ -10,6 +10,9 @@ function GameRunner (gamePanel, updateProgress) {
   function runAll (unlocked) {
     runningAllCallback = runNextScenario;
     var nextScenario = -1;
+
+    currentScenario = null;
+    solutions.stopSolution();
     updateProgress({
       running: 'all'
     });

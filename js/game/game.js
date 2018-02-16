@@ -4,11 +4,11 @@ function Game(panel, scenarioFinished) {
   var runner = GameScenarioRunner(view.update, win, lose);
   var userInput
 
-  function runScenario(index, userInputNeeded) {
+  function runScenario(index, enableUserInput) {
     reset()
     runner.run(index);
     view.scenarioName(index);
-    if (userInputNeeded) {
+    if (enableUserInput) {
       userInput = UserInput(runner.move);
     }
   }
