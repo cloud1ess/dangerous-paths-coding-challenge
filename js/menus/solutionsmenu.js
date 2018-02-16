@@ -7,7 +7,7 @@ function SolutionsMenu (parentElement, runAll, runScenario, viewScenario) {
 
     parentElement.innerHTML = '';
 
-    var runButton = Utils.createElement('button', parentElement);
+    var runButton = Utils.createElement('button', parentElement, ['runall_button']);
     var buttonText = document.createTextNode('Run All and Progess');
     runButton.appendChild(buttonText);
     runButton.onclick = function (evt) {
@@ -19,24 +19,18 @@ function SolutionsMenu (parentElement, runAll, runScenario, viewScenario) {
     }
 
     function scenarioButtons (index) {
-      var container = Utils.createElement('div', parentElement);
-      container.style = "padding:5px;";
+      var backgroundColour = 'red';
+      if (running === index) {
+        backgroundColour = "purple"
+      } else if (passed[index]) {
+        backgroundColour = "green"
+      }
+      var container = Utils.createElement('div', parentElement, ['scenario_buttons_container', 'background_'+backgroundColour]);
 
-      var scenarioIndex = Utils.createElement('span', container);
+      var scenarioIndex = Utils.createElement('span', container, ['scenario_text']);
       scenarioIndex.innerText = "Scenario "+(index+1)+": "+Scenarios[index].name;
 
-      var style = "padding-right:5px;font-size: 13pt;color: #efefef;background-color: "
-      var backgroundColour = '#ff471a';
-
-      if (running === index) {
-        backgroundColour = "#c653c6"
-      } else if (passed[index]) {
-        backgroundColour = "#37883a"
-      }
-      style += backgroundColour
-      scenarioIndex.style = style
-
-      var viewButton = Utils.createElement('button', container)
+      var viewButton = Utils.createElement('button', container, ['scenario_button'])
       buttonText = document.createTextNode('View')
       viewButton.appendChild(buttonText)
       viewButton.scenarioIndex = index
@@ -44,7 +38,7 @@ function SolutionsMenu (parentElement, runAll, runScenario, viewScenario) {
         viewScenario(this.scenarioIndex);
       }
 
-      var runButton = Utils.createElement('button', container)
+      var runButton = Utils.createElement('button', container, ['scenario_button'])
       var buttonText = document.createTextNode('Run')
       runButton.appendChild(buttonText)
       runButton.scenarioIndex = index

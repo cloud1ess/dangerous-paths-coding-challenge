@@ -1,7 +1,7 @@
 function Solutions () {
 
   // api.move(dir) dir = up/down/left/right
-  // api.getCellTypeFromOffset({x:0, y:0}) returns 'path/collapser/dissapearing/finish/empty'
+  // api.getCellTypeFromOffset({x:0, y:0}) returns 'path/collapser/dissapearing/checkpoint/finish/empty'
 
   var interval
 
@@ -12,7 +12,6 @@ function Solutions () {
     }
 
     interval = window.setInterval(function () {
-      console.log(index+" : "+interval)
       var route = RouteFinder(api.getCellTypeFromOffset);
       if (route) {
         window.clearInterval(interval);

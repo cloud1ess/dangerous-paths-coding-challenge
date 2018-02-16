@@ -1,10 +1,8 @@
 (function Main () {
-  var solutionsContainer = Utils.createElement('div', null);
-  solutionsContainer.style = "display: inline-block; vertical-align: top; width:280px"
-
+  var solutionsContainer = Utils.createElement('div', null, ['root_container']);
   var gamePanel = createCanvasPanel();
-  var gameRunner = GameRunner(gamePanel, updateProgress)
   var progress = Progress();
+  var gameRunner = GameRunner(gamePanel, updateProgress)
   var solutionsMenu = SolutionsMenu(solutionsContainer, gameRunner.runAll, gameRunner.runScenario, gameRunner.viewScenario);
 
   updateProgress({})
