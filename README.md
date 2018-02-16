@@ -1,7 +1,7 @@
 # dangerous-paths-coding-challenge
 A unique coding challenge written in vanilla ES5 JS. See if you can solve all of the game scenarios, focus on clean, readable code.
 
-## Getting Started
+# Getting Started
 
 Checkout master and then switch to a branch so you can submit your own solution.
 
