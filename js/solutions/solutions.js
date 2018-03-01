@@ -12,7 +12,15 @@ function Solutions () {
   // Offset is the relative to the players position
 
   function runSolution (index, api) {
-
+    api.move(DIRS.down)
+    api.move(DIRS.down)
+    api.move(DIRS.right)
+    api.move(DIRS.right)
+    api.move(DIRS.up)
+    api.move(DIRS.right)
+    api.move(DIRS.right)
+    api.move(DIRS.down)
+    api.move(DIRS.down)
   }
 
   function stopSolution() {
