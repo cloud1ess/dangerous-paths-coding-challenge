@@ -131,13 +131,22 @@ function GameScenarioRunner(stateChange, win, lose) {
       y: scenario.playerPos.y + (offset.y || 0)
     }
 
-    var scenario = Scenarios[scenarioIndex];
     var cellTypeArray
 
     for (var cellType in CELL_TYPES) {
       cellTypeArray = scenario[cellType];
       if (cellTypeArray) {
         for (var i=0; i<cellTypeArray.length; i++) {
+          if (cellTypeArray[i].length) {
+            for (var j=0; j<cellTypeArray[i].length; j++) {
+              if (cellTypeArray[i][j]) {
+                if (positionsAreSame(pos, cellTypeArray[i][j])) {
+                  return cellType
+                }
+              }
+            }
+          }
+
           if (positionsAreSame(pos, cellTypeArray[i])) {
             return cellType
           }
