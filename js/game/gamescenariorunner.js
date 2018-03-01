@@ -1,13 +1,12 @@
 function GameScenarioRunner(stateChange, win, lose) {
 
   var FRAME_TIMER = 1000
-  var DIRS = {
+  var DIR_OFFSET = {
     up: {x:0, y:-1},
     down: {x:0, y:1},
     left: {x:-1, y:0},
     right: {x:1, y:0}
   }
-
   var paused
   var scenario
   var frameTimer
@@ -42,8 +41,8 @@ function GameScenarioRunner(stateChange, win, lose) {
     if (collapsingIndex >= 0) {
       scenario.collapsed.push(collapsingIndex);
     }
-    scenario.playerPos.x += DIRS[dir].x;
-    scenario.playerPos.y += DIRS[dir].y;
+    scenario.playerPos.x += DIR_OFFSET[dir].x;
+    scenario.playerPos.y += DIR_OFFSET[dir].y;
 
     var checkpointIndex = steppedOnACheckpoint();
     if (checkpointIndex >= 0) {
@@ -56,38 +55,15 @@ function GameScenarioRunner(stateChange, win, lose) {
   function stateHasUpdated () {
     scenario.frameCells = GenerateFrameCells (scenarioIndex, scenario.frame, scenario.collapsed, scenario.checkpointsVisited);
 
-    var outcome = getCellType(scenario.playerPos);
-    if (outcome === 'empty') {
+    var outcome = getOutcomeFromOffset({x:0, y:0});
+    if (outcome === OUTCOMES.die) {
       pause();
       lose();
-    } else if (outcome === 'finish' && allCheckPointsHaveBeenReached()) {
+    } else if (outcome === OUTCOMES.finish && allCheckPointsHaveBeenReached()) {
       pause();
       win();
     }
     stateChange(scenario);
-  }
-
-  function getCellType (pos) {
-    if (positionsAreSame(pos, scenario.finish)) {
-      return 'finish'
-    }
-    var frameCells = scenario.frameCells;
-
-    for (var i=0; i<frameCells.length; i++) {
-      if (positionsAreSame(pos, frameCells[i])) {
-        return frameCells[i].type || 'path'
-      }
-    }
-    return 'empty'
-  }
-
-  function getCellTypeFromOffset (offset) {
-    offset = offset || {x:0, y:0};
-    var pos = {
-      x: scenario.playerPos.x + (offset.x || 0),
-      y: scenario.playerPos.y + (offset.y || 0)
-    }
-    return getCellType(pos)
   }
 
   function steppedOnACollapsingCell () {
@@ -148,10 +124,54 @@ function GameScenarioRunner(stateChange, win, lose) {
     frameTimer = null
   }
 
+  function getCellTypeFromOffset (offset) {
+    offset = offset || {x:0, y:0};
+    var pos = {
+      x: scenario.playerPos.x + (offset.x || 0),
+      y: scenario.playerPos.y + (offset.y || 0)
+    }
+
+    var scenario = Scenarios[scenarioIndex];
+    var cellTypeArray
+
+    for (var cellType in CELL_TYPES) {
+      cellTypeArray = scenario[cellType];
+      if (cellTypeArray) {
+        for (var i=0; i<cellTypeArray.length; i++) {
+          if (positionsAreSame(pos, cellTypeArray[i])) {
+            return cellType
+          }
+        }
+      }
+    }
+    return null
+  }
+
+  function getOutcomeFromOffset (offset) {
+    offset = offset || {x:0, y:0};
+    var pos = {
+      x: scenario.playerPos.x + (offset.x || 0),
+      y: scenario.playerPos.y + (offset.y || 0)
+    }
+
+    if (positionsAreSame(pos, scenario.finish)) {
+      return OUTCOMES.finish
+    }
+    var frameCells = scenario.frameCells;
+
+    for (var i=0; i<frameCells.length; i++) {
+      if (positionsAreSame(pos, frameCells[i])) {
+        return OUTCOMES.survive
+      }
+    }
+    return OUTCOMES.die
+  }
+
   return {
     run: run,
     move: move,
     reset: reset,
+    getOutcomeFromOffset: getOutcomeFromOffset,
     getCellTypeFromOffset: getCellTypeFromOffset
   }
 }

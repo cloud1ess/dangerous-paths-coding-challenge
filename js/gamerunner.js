@@ -47,7 +47,8 @@ function GameRunner (gamePanel, updateProgress) {
 
     solutions.runSolution(index, {
       move: game.move,
-      getCellTypeFromOffset: game.getCellTypeFromOffset
+      getCellTypeFromOffset: game.getCellTypeFromOffset,
+      getOutcomeFromOffset: game.getOutcomeFromOffset
     });
 
     clearTimeout(timeout);

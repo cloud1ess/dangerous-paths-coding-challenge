@@ -36,6 +36,7 @@ function Game(panel, scenarioFinished) {
     runScenario : runScenario,
     move: runner.move,
     getCellTypeFromOffset: runner.getCellTypeFromOffset,
+    getOutcomeFromOffset: runner.getOutcomeFromOffset,
     reset : reset
   }
 }

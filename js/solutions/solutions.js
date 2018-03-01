@@ -1,14 +1,14 @@
 function Solutions () {
 
   // ------------------------------------------------------------
-  // Game Api
+  //  Game Api
   // ------------------------------------------------------------
-  // api.move(dir)
-  // api.getCellTypeFromOffset(offset) returns cellType
   //
-  // dir = up/down/left/right
-  // offset = {x:xOffsetFromPlayerPos, y:yOffsetFromPlayerPos}
-  // cellType = path/finish/empty/collapser/dissapearing/checkpoint
+  // api.move(dir <DIRS>)
+  // api.getOutcomeFromOffset({x:1, y:0}}) returns outcome <OUTCOMES>
+  // api.getCellTypeFromOffset({x:1, y:0}}) returns cellType <CELL_TYPES>
+  //
+  // Refer to constanst.js for <data type>
 
   function runSolution (index, api) {
 
