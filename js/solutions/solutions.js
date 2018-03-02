@@ -21,20 +21,41 @@ function Solutions() {
     var finish = false;
     var count = 0;
     var prevMove;
-    while (!finish && count < 100) {
+
+    while (!finish && count < 500) {
+      var branches = [];
       for (const dir in DIR_OFFSET) {
         if (prevMove && prevMove === dir) continue;
 
-        if (api.getCellTypeFromOffset(DIR_OFFSET[dir]) === CELL_TYPES.path) {
-          api.move(dir);
-          prevMove = getOpposite(dir);
-          break;
+        var cellType = api.getCellTypeFromOffset(DIR_OFFSET[dir]);
+        if (cellType === CELL_TYPES.path || cellType === CELL_TYPES.disappearing) {
+          branches.push(dir);
         }
         console.log(api.getOutcomeFromOffset(DIR_OFFSET[dir]));
         console.log(api.getCellTypeFromOffset(DIR_OFFSET[dir]));
       }
-      if (api.getOutcomeFromOffset({ x: 0, y: 0 }) === OUTCOMES.finish) finish = true;
+
       count += 1;
+
+      if (branches.length === 0) continue;
+      var nextMove = branches[0];
+
+      if (branches.length > 1) {
+        nextMove = branches[Math.floor(Math.random() * branches.length)];
+      }
+
+      var cnt = 0;
+      do {
+        var outcome = api.getOutcomeFromOffset(DIR_OFFSET[nextMove]);
+        cnt += 1;
+      } while (outcome === OUTCOMES.die && cnt < 100);
+
+      if(outcome !== OUTCOMES.die){
+        api.move(nextMove);
+        prevMove = getOpposite(nextMove);
+      }
+
+      if (api.getOutcomeFromOffset({ x: 0, y: 0 }) === OUTCOMES.finish) finish = true;
     }
   }
 
