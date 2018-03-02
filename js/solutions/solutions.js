@@ -12,6 +12,7 @@ function Solutions() {
   // Offset is the relative to the players position
 
   var previous;
+  var timer;
 
   var offsets = {
     right: { x: 1, y: 0 },
@@ -20,31 +21,73 @@ function Solutions() {
     down: { x: 0, y: 1 },
   }
 
-  function runSolution(index, api) {
+  function getMovesAsFarAsPossible(api, startPosition) {
+    var canMove = true;
+    var moves = [];
+    var pseudoPosition = startPosition;        
 
-    var ended = false;
+    while (canMove) {
+      // check all directions and see which are valid.
+      var validDirections = checkForValidPaths(pseudoPosition, api);
 
-    console.log('running soluton ' + index);
+      if (validDirections === []) {
+        canMove = false;
+      }
+      else {
+        // if the direction is previous location, remove this
+        if (validDirections !== []) {
+          next = validDirections.filter(function (direction) {
+            return direction !== previous;
+          })[0];
+        }
 
-    do {
-      var validDirections = checkForValidPaths(api);
-      if (validDirections !== []) {
-        next = validDirections.filter(function (direction) {
-          return direction !== previous;
-        })[0];
+        // push the next direction to the moves array
+        moves.push(next);
 
-        console.log('Moving...' + next);
-        api.move(next);
+        //update the pseudoPosition;
+        pseudoPosition.x += offsets[next].x;
+        pseudoPosition.y += offsets[next].y;
+
+        // update the previous direction
         previous = getPreviousCell(next);
 
-        finish = checkForFinish(api);
+        // check to see if finish is in one of the directions
+        finish = checkForFinish(pseudoPosition, api);
+
+        // if so, push that move too.
+        //TODO: consider moving this up into main runSolution function.
         if (finish) {
-          api.move(finish);
-          ended = true;
+          moves.push(finish);
+          canMove = false;
+          window.clearInterval(timer);
         }
       }
     }
-    while (!ended);
+
+    return moves;
+  }
+
+  function doMoves(moves, api) {
+    moves.forEach(move => {
+      api.move(move);
+    });
+
+  }
+
+  function runSolution(index, api) {
+
+    var currentPosition = {x:0, y:0};
+
+    timer = window.setInterval(function () {
+
+      moves = getMovesAsFarAsPossible(api, currentPosition);
+
+      if(moves !== []) {
+        doMoves(moves, api);
+      }
+
+    }, 100);
+
   }
 
   function getPreviousCell(direction) {
@@ -62,40 +105,41 @@ function Solutions() {
     }
   }
 
-  function checkForValidPaths(api) {
+  function checkForValidPaths(pseudoPosition, api) {
     var validPaths = [];
-    if (api.getCellTypeFromOffset({ x: 1, y: 0 })) {
+    if (api.getCellTypeFromOffset({ x: 1+pseudoPosition.x, y: 0+pseudoPosition.y })) {
       validPaths.push(DIRS.right);
     }
-    if (api.getCellTypeFromOffset({ x: -1, y: 0 })) {
+    if (api.getCellTypeFromOffset({ x: -1+pseudoPosition.x, y: 0+pseudoPosition.y })) {
       validPaths.push(DIRS.left);
     }
-    if (api.getCellTypeFromOffset({ x: 0, y: 1 })) {
+    if (api.getCellTypeFromOffset({ x: 0+pseudoPosition.x, y: 1+pseudoPosition.y })) {
       validPaths.push(DIRS.down);
     }
-    if (api.getCellTypeFromOffset({ x: 0, y: -1 })) {
+    if (api.getCellTypeFromOffset({ x: 0+pseudoPosition.x, y: -1+pseudoPosition.y })) {
       validPaths.push(DIRS.up);
     }
     return validPaths;
   }
 
-  function checkForFinish(api) {
-    if (api.getOutcomeFromOffset({ x: 1, y: 0 }) === 'finish') {
+  function checkForFinish(pseudoPosition, api) {
+    if (api.getOutcomeFromOffset({ x: 1+pseudoPosition.x, y: 0+pseudoPosition.y }) === 'finish') {
       return DIRS.right;
     }
-    if (api.getOutcomeFromOffset({ x: -1, y: 0 }) === 'finish') {
+    if (api.getOutcomeFromOffset({ x: -1+pseudoPosition.x, y: 0+pseudoPosition.y }) === 'finish') {
       return DIRS.left;
     }
-    if (api.getOutcomeFromOffset({ x: 0, y: 1 }) === 'finish') {
+    if (api.getOutcomeFromOffset({ x: 0+pseudoPosition.x, y: 1+pseudoPosition.y }) === 'finish') {
       return DIRS.down;
     }
-    if (api.getOutcomeFromOffset({ x: 0, y: -1 }) === 'finish') {
+    if (api.getOutcomeFromOffset({ x: 0+pseudoPosition.x, y: -1+pseudoPosition.y }) === 'finish') {
       return DIRS.up;
     }
     return false;
   }
 
   function stopSolution() {
+
   }
 
   return {
