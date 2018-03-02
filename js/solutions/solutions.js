@@ -12,8 +12,8 @@ function Solutions() {
 
   function runSolution(index, api) {
     var DIR_OFFSET = {
-      up: { x: 0, y: -1 },
       down: { x: 0, y: 1 },
+      up: { x: 0, y: -1 },
       left: { x: -1, y: 0 },
       right: { x: 1, y: 0 }
     };
@@ -28,11 +28,9 @@ function Solutions() {
         if (prevMove && prevMove === dir) continue;
 
         var cellType = api.getCellTypeFromOffset(DIR_OFFSET[dir]);
-        if (cellType === CELL_TYPES.path || cellType === CELL_TYPES.disappearing) {
+        if (cellType) {
           branches.push(dir);
         }
-        console.log(api.getOutcomeFromOffset(DIR_OFFSET[dir]));
-        console.log(api.getCellTypeFromOffset(DIR_OFFSET[dir]));
       }
 
       count += 1;
@@ -44,18 +42,17 @@ function Solutions() {
         nextMove = branches[Math.floor(Math.random() * branches.length)];
       }
 
-      var cnt = 0;
-      do {
-        var outcome = api.getOutcomeFromOffset(DIR_OFFSET[nextMove]);
-        cnt += 1;
-      } while (outcome === OUTCOMES.die && cnt < 100);
-
-      if(outcome !== OUTCOMES.die){
+      var outcome = api.getOutcomeFromOffset(nextMove);
+      console.log("nextMove outcome: ", outcome);
+      if (outcome !== OUTCOMES.die) {
+        console.log("move to: ", nextMove);
         api.move(nextMove);
         prevMove = getOpposite(nextMove);
       }
 
-      if (api.getOutcomeFromOffset({ x: 0, y: 0 }) === OUTCOMES.finish) finish = true;
+      var currentOutcome = api.getOutcomeFromOffset({ x: 0, y: 0 });
+      if (currentOutcome === OUTCOMES.finish) finish = true;
+      if (currentOutcome === OUTCOMES.die) break;
     }
   }
 
