@@ -11,43 +11,23 @@ function Solutions() {
   // Offset is the relative to the players position
 
   function runSolution(index, api) {
-    var DIR_OFFSET = {
-      down: { x: 0, y: 1 },
-      up: { x: 0, y: -1 },
-      left: { x: -1, y: 0 },
-      right: { x: 1, y: 0 }
-    };
-
     var finish = false;
-    var count = 0;
-    var prevMove;
+    var countMoves = 0;
+    var previousMove;
 
-    while (!finish && count < 500) {
-      var branches = [];
-      for (const dir in DIR_OFFSET) {
-        if (prevMove && prevMove === dir) continue;
+    while (!finish && countMoves < 500) {
+      var nextMove = getNextMove(api, previousMove);
+      countMoves += 1;
 
-        var cellType = api.getCellTypeFromOffset(DIR_OFFSET[dir]);
-        if (cellType) {
-          branches.push(dir);
-        }
-      }
-
-      count += 1;
-
-      if (branches.length === 0) continue;
-      var nextMove = branches[0];
-
-      if (branches.length > 1) {
-        nextMove = branches[Math.floor(Math.random() * branches.length)];
-      }
+      console.log("nextMove: ", nextMove);
+      if(!nextMove) continue;
 
       var outcome = api.getOutcomeFromOffset(nextMove);
       console.log("nextMove outcome: ", outcome);
+
       if (outcome !== OUTCOMES.die) {
-        console.log("move to: ", nextMove);
         api.move(nextMove);
-        prevMove = getOpposite(nextMove);
+        previousMove = getOpposite(nextMove);
       }
 
       var currentOutcome = api.getOutcomeFromOffset({ x: 0, y: 0 });
@@ -56,15 +36,27 @@ function Solutions() {
     }
   }
 
-  function getOpposite(dir) {
-    var opposite = {
-      up: "down",
-      down: "up",
-      left: "right",
-      right: "left"
-    };
+  function getNextMove(api, previousMovie) {
+    var paths = [];
+    for (const dir in DIR_OFFSET) {
+      if (previousMovie === dir) continue;
 
-    return opposite[dir];
+      if (api.getCellTypeFromOffset(DIR_OFFSET[dir])) {
+        paths.push(dir);
+      }
+    }
+
+    if (paths.length === 0) return null;
+
+    if (paths.length > 1) {
+      return paths[Math.floor(Math.random() * paths.length)];
+    }
+
+    return paths.pop();
+  }
+
+  function getOpposite(dir) {
+    return OPPOSITE[dir];
   }
 
   function stopSolution() {}
