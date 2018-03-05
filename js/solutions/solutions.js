@@ -11,29 +11,28 @@ function Solutions() {
   // Offset is the relative to the players position
 
   function runSolution(index, api) {
-    var finish = false;
-    var countMoves = 0;
-    var previousMove;
+    console.log(index);
+    loop(api);
+  }
 
-    while (!finish && countMoves < 500) {
-      var nextMove = getNextMove(api, previousMove);
-      countMoves += 1;
+  function loop(api, previousMove) {
+    var nextMove = getNextMove(api, previousMove);
+    var outcome = api.getOutcomeFromOffset(DIR_OFFSET[nextMove]);
 
-      console.log("nextMove: ", nextMove);
-      if(!nextMove) continue;
+    console.log("nextMove outcome: ", outcome);
+    console.log("nextMove: ", nextMove);
 
-      var outcome = api.getOutcomeFromOffset(nextMove);
-      console.log("nextMove outcome: ", outcome);
-
-      if (outcome !== OUTCOMES.die) {
-        api.move(nextMove);
-        previousMove = getOpposite(nextMove);
-      }
-
-      var currentOutcome = api.getOutcomeFromOffset({ x: 0, y: 0 });
-      if (currentOutcome === OUTCOMES.finish) finish = true;
-      if (currentOutcome === OUTCOMES.die) break;
+    if (nextMove && outcome !== OUTCOMES.die) {
+      api.move(nextMove);
+      previousMove = getOpposite(nextMove);
     }
+
+    var currentOutcome = api.getOutcomeFromOffset({ x: 0, y: 0 });
+
+    if (currentOutcome === OUTCOMES.finish) return;
+    if (currentOutcome === OUTCOMES.die) return;
+
+    setTimeout(() => loop(api, previousMove), 10);
   }
 
   function getNextMove(api, previousMovie) {
@@ -46,7 +45,7 @@ function Solutions() {
       }
     }
 
-    if (paths.length === 0) return null;
+    if (paths.length === 0) return 'down';
 
     if (paths.length > 1) {
       return paths[Math.floor(Math.random() * paths.length)];
