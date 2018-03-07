@@ -29,3 +29,5 @@ var OPPOSITE = {
   left: "right",
   right: "left"
 };
+
+var SPEED = 30
