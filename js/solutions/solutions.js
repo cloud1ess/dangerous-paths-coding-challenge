@@ -21,8 +21,8 @@ function Solutions() {
     if (index === 6) console.clear();
     console.log("Running scenario: ", Scenarios[index].name);
 
-    finishPosition = getFinishPosition(api);
-    checkpoints = getCheckpoints(api);
+    finishPosition = Utility.findFinishPosition(api);
+    checkpoints = Utility.findCheckpoints(api);
     currentPosition = { x: 0, y: 0 };
     currentScenario = index;
     target = checkpoints.length > 0 ? checkpoints.pop() : finishPosition;
@@ -78,7 +78,7 @@ function Solutions() {
   }
 
   function getNextMove(api) {
-    const paths = findPaths(api);
+    const paths = Utility.findPaths(api);
 
     if (paths.length === 0) return Object.keys(DIRS)[Math.floor(Math.random() * 4)];
     if (paths.length > 1) {
@@ -91,59 +91,6 @@ function Solutions() {
     }
 
     return paths.pop().direction;
-  }
-
-  function findPaths(api) {
-    console.log("findPaths target: ", target);
-    const paths = [];
-
-    for (let dir in DIR_OFFSET) {
-      if (getOpposite(previousMove) === dir) continue;
-
-      if (api.getCellTypeFromOffset(DIR_OFFSET[dir])) {
-        distance = delta(addOffset(currentPosition, DIR_OFFSET[dir]), target);
-        paths.push({ direction: dir, distance });
-      }
-    }
-
-    return paths;
-  }
-
-  function addOffset(point, offset) {
-    console.log("add offset: ", point, offset);
-    return { x: point.x + offset.x, y: point.y + offset.y };
-  }
-
-  function getCheckpoints(api) {
-    var checkpoints = [];
-    for (let x = -10; x < 10; x++) {
-      for (let y = -10; y < 10; y++) {
-        const cellType = api.getCellTypeFromOffset({ x, y });
-        if (cellType === CELL_TYPES.checkpoints) {
-          checkpoints.push({ x, y });
-        }
-      }
-    }
-    return checkpoints;
-  }
-
-  function getFinishPosition(api) {
-    for (let x = -10; x < 10; x++) {
-      for (let y = -10; y < 10; y++) {
-        const outcome = api.getOutcomeFromOffset({ x, y });
-        if (outcome === OUTCOMES.finish) {
-          return { x, y };
-        }
-      }
-    }
-  }
-
-  function delta(p1, p2) {
-    return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
-  }
-
-  function getOpposite(dir) {
-    return OPPOSITE[dir];
   }
 
   function stopSolution() {}
