@@ -30,12 +30,12 @@ function Solutions() {
       // check all directions and see which are valid.
       var validDirections = checkForValidPaths(pseudoPosition, api);
 
-      if (validDirections === []) {
+      if (validDirections.length === 0) {
         canMove = false;
       }
       else {
         // if the direction is previous location, remove this
-        if (validDirections !== []) {
+        if (validDirections.length !== 0) {
           next = validDirections.filter(function (direction) {
             return direction !== previous;
           })[0];
@@ -82,13 +82,12 @@ function Solutions() {
 
   function runSolution(index, api) {
 
-    var currentPosition = {x:0, y:0};
-
     timer = window.setInterval(function () {
 
+      var currentPosition = {x:0, y:0};
       moves = getMovesAsFarAsPossible(api, currentPosition);
 
-      if(moves !== []) {
+      if(moves.length !== 0) {
         doMoves(moves, api);
       }
 
@@ -145,7 +144,7 @@ function Solutions() {
   }
 
   function stopSolution() {
-
+    window.clearInterval(timer);
   }
 
   return {
