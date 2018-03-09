@@ -41,26 +41,32 @@ function Solutions() {
           })[0];
         }
 
-        // push the next direction to the moves array
-        moves.push(next);
+        if (next) {
+          // push the next direction to the moves array
+          moves.push(next);
 
-        //update the pseudoPosition;
-        pseudoPosition.x += offsets[next].x;
-        pseudoPosition.y += offsets[next].y;
+          //update the pseudoPosition;
+          pseudoPosition.x += offsets[next].x;
+          pseudoPosition.y += offsets[next].y;
 
-        // update the previous direction
-        previous = getPreviousCell(next);
+          // update the previous direction
+          previous = getPreviousCell(next);
 
-        // check to see if finish is in one of the directions
-        finish = checkForFinish(pseudoPosition, api);
+          // check to see if finish is in one of the directions
+          finish = checkForFinish(pseudoPosition, api);
 
-        // if so, push that move too.
-        //TODO: consider moving this up into main runSolution function.
-        if (finish) {
-          moves.push(finish);
+          // if so, push that move too.
+          //TODO: consider moving this up into main runSolution function.
+          if (finish) {
+            moves.push(finish);
+            canMove = false;
+            window.clearInterval(timer);
+          }
+        } else {
           canMove = false;
-          window.clearInterval(timer);
         }
+
+        
       }
     }
 
@@ -107,16 +113,16 @@ function Solutions() {
 
   function checkForValidPaths(pseudoPosition, api) {
     var validPaths = [];
-    if (api.getCellTypeFromOffset({ x: 1+pseudoPosition.x, y: 0+pseudoPosition.y })) {
+    if (api.getOutcomeFromOffset({ x: 1+pseudoPosition.x, y: 0+pseudoPosition.y }) === 'survive') {
       validPaths.push(DIRS.right);
     }
-    if (api.getCellTypeFromOffset({ x: -1+pseudoPosition.x, y: 0+pseudoPosition.y })) {
+    if (api.getOutcomeFromOffset({ x: -1+pseudoPosition.x, y: 0+pseudoPosition.y }) === 'survive') {
       validPaths.push(DIRS.left);
     }
-    if (api.getCellTypeFromOffset({ x: 0+pseudoPosition.x, y: 1+pseudoPosition.y })) {
+    if (api.getOutcomeFromOffset({ x: 0+pseudoPosition.x, y: 1+pseudoPosition.y }) === 'survive') {
       validPaths.push(DIRS.down);
     }
-    if (api.getCellTypeFromOffset({ x: 0+pseudoPosition.x, y: -1+pseudoPosition.y })) {
+    if (api.getOutcomeFromOffset({ x: 0+pseudoPosition.x, y: -1+pseudoPosition.y }) === 'survive') {
       validPaths.push(DIRS.up);
     }
     return validPaths;
