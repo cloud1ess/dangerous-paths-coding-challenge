@@ -32,7 +32,7 @@ function Solutions () {
       .concat(movesAlreadyTried)
       .concat(opposites[lastMove])
     return moveList.map((move) => { return {move: move, type: api.getCellTypeFromOffset(possibleMoves[move])}})
-      .filter(mt => mt.type === CELL_TYPES.path)[0].move
+      .filter(mt => mt.type === CELL_TYPES.path || mt.type === CELL_TYPES.disappearing)[0].move
   }
 
   function getNewPosition(currentPosition, move) {
@@ -44,18 +44,43 @@ function Solutions () {
     return moves[move](currentPosition)
   }
 
+  function waitForNextMove(api, position, history, move) {
+    setTimeout(function () {
+      const outcome = api.getOutcomeFromOffset(possibleMoves[move]);
+      if ( outcome === OUTCOMES.survive ) {
+        completeMove(api, position, history, move, outcome);
+      } else {
+        waitForNextMove(api, position, history, move);
+      }
+    }, 50);
+  }
+
+  function completeMove(api, position, history, move, outcome) {
+    api.move(move);
+    history.push({pos: position, move});
+    position = getNewPosition(position, move);
+    if (outcome !== OUTCOMES.finish) {
+      runNextMove(api, position, history);
+    }
+  }
+
+  function runNextMove(api, position, history) {
+    const move = getNextMove(api, position, history);
+    const cellType = api.getCellTypeFromOffset(possibleMoves[move]);
+    const outcome = api.getOutcomeFromOffset(possibleMoves[move]);
+    if ( cellType === CELL_TYPES.disappearing && outcome === OUTCOMES.die ) {
+      waitForNextMove(api, position, history, move);
+    } else {
+      completeMove(api, position, history, move, outcome)
+    }
+  }
+
   function runSolution (index, api) {
     const history = []
     let outcome;
     let position = {x: 0, y: 0};
 
-    while(outcome !== OUTCOMES.finish){
-      const move = getNextMove(api, position, history);
-      outcome = api.getOutcomeFromOffset(possibleMoves[move]);
-      api.move(move);
-      history.push({pos: position, move});
-      position = getNewPosition(position, move);
-    }
+    runNextMove(api, position, history);
   }
 
   function stopSolution() {
