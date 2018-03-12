@@ -12,23 +12,29 @@ function Solutions() {
 
   async function runSolution(index, api) {
     const scenario = Object.assign({}, Scenarios[index]);
-    const grid = new Grid(scenario);
-    const pathfinder = new Pathfinder(grid);
-    const pathFound = navigatePath.bind(this, api, index);
+    const pathFinder = new SimplePathFinder(scenario);
+    const walker = new Walker(api);
+    const getOutcome = Utilities.getOutcome.bind(this, api);
+    const walkPath = walk.bind(this, walker, getOutcome, index);
     try {
-      const path = await pathfinder.findPath(scenario);
-      pathFound(path);
+      const path = pathFinder.getPath(scenario);
+      walkPath(path);
     } catch (error) {
-      console.error(error);
+      console.error(`💩 ${error}`);
     }
   }
 
-  async function navigatePath(api, index, path) {
-    const walker = new Walker(api);
-    const reachedGoal = await walker.takeWalk(path);
-    console.info(`Solution ${index + 1}:`, { reachedGoal });
+  async function walk(walker, getOutcome, index, path) {
+    try {
+      const reachedGoal = await walker.takeWalk(path, getOutcome);
+      console.info(`Scenario ${index + 1} 👍`);
+    } catch (error) {
+      console.error(`💩 ${error}`);
+    }
   }
 
-  function stopSolution() {}
+  function stopSolution() {
+    console.clear();
+  }
   return { runSolution, stopSolution };
 }
