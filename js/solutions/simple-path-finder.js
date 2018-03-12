@@ -16,7 +16,7 @@ class SimplePathFinder {
 
   findPath(start, finish) {
     this.grid = this.resetGrid();
-    return this.quickestPath(start, finish, this.grid);
+    return this.quickestPath(start, finish);
   }
 
   multiStop(scenario) {
@@ -30,11 +30,7 @@ class SimplePathFinder {
     return Utilities.flatten(paths);
   }
 
-  quickestPath(start, finish, grid) {
-    return this.pathFinder(start, finish);
-  }
-
-  pathFinder(start, finish) {
+  quickestPath(start, finish) {
     this.addGoalTile(finish);
 
     const point = Utilities.getStartPoint(start.x, start.y);
