@@ -23,7 +23,7 @@ function Solutions () {
   opposites[DIRS.up] = DIRS.down;
   opposites[DIRS.left] = DIRS.right;
 
-  function getNextMove(api, position, history) {
+  function getBestNextMove(api, position, history) {
     const lastMove = history.length && history[history.length - 1].move;
     const movesAlreadyTried = history.filter(h => h.pos.x === position.x && h.pos.y === position.y).map(h => h.move)
     var moveList = Object.keys(possibleMoves)
@@ -44,34 +44,32 @@ function Solutions () {
     return moves[move](currentPosition)
   }
 
-  function waitForNextMove(api, position, history, move) {
-    setTimeout(function () {
-      const outcome = api.getOutcomeFromOffset(possibleMoves[move]);
-      if ( outcome === OUTCOMES.survive ) {
-        completeMove(api, position, history, move, outcome);
-      } else {
-        waitForNextMove(api, position, history, move);
-      }
-    }, 50);
+  async function makeNextMove(api, position, history, move) {
+    const cellType = api.getCellTypeFromOffset(possibleMoves[move]);
+    const outcome = api.getOutcomeFromOffset(possibleMoves[move]);
+    if ( cellType === CELL_TYPES.disappearing && outcome === OUTCOMES.die ) {
+      return new Promise(function(resolve) {
+        const handle = setInterval(function () {
+          const outcome = api.getOutcomeFromOffset(possibleMoves[move]);
+          if ( outcome === OUTCOMES.survive ) {
+            clearInterval(handle)
+            resolve(outcome);
+          }
+        }, 50);
+      })
+    } else {
+      return Promise.resolve(outcome);
+    }
   }
 
-  function completeMove(api, position, history, move, outcome) {
+  async function doNextMove(api, position, history) {
+    const move = getBestNextMove(api, position, history);
+    const outcome = await makeNextMove(api, position, history, move)
     api.move(move);
     history.push({pos: position, move});
     position = getNewPosition(position, move);
     if (outcome !== OUTCOMES.finish) {
-      runNextMove(api, position, history);
-    }
-  }
-
-  function runNextMove(api, position, history) {
-    const move = getNextMove(api, position, history);
-    const cellType = api.getCellTypeFromOffset(possibleMoves[move]);
-    const outcome = api.getOutcomeFromOffset(possibleMoves[move]);
-    if ( cellType === CELL_TYPES.disappearing && outcome === OUTCOMES.die ) {
-      waitForNextMove(api, position, history, move);
-    } else {
-      completeMove(api, position, history, move, outcome)
+      doNextMove(api, position, history);
     }
   }
 
@@ -80,7 +78,7 @@ function Solutions () {
     let outcome;
     let position = {x: 0, y: 0};
 
-    runNextMove(api, position, history);
+    doNextMove(api, position, history);
   }
 
   function stopSolution() {
