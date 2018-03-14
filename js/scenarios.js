@@ -129,7 +129,8 @@ var Scenarios = [
       {x: 1, y: 2},
       {x: 7, y: 0},
       {x: 7, y: 2},
-      {x: 7, y: 1}
+      {x: 7, y: 1},
+      {x: 8, y: 1}
     ],
     collapsing: [
       {x: 2, y: 0},
@@ -187,6 +188,7 @@ var Scenarios = [
       {x:10, y:4},
       {x:11, y:4},
       {x:12, y:4},
+      {x:12, y:2},
       {x:12, y:3}
     ],
     disappearing: [
