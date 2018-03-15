@@ -12,15 +12,20 @@ function Solutions () {
   // Offset is the relative to the players position
 
   function runSolution (index, api) {
-    api.move(DIRS.down);
-    api.move(DIRS.down);
-    api.move(DIRS.right);
-    api.move(DIRS.right);
-    api.move(DIRS.up);
-    api.move(DIRS.right);
-    api.move(DIRS.right);
-    api.move(DIRS.down);
-    api.move(DIRS.down);
+    var step = 0;
+    setInterval(function () {
+      api.move([
+        DIRS.down,
+        DIRS.down,
+        DIRS.right,
+        DIRS.right,
+        DIRS.up,
+        DIRS.right,
+        DIRS.right,
+        DIRS.down,
+        DIRS.down,
+      ][step++]);
+    }, 100);
   }
 
   function stopSolution() {
