@@ -23,6 +23,11 @@ function Solutions () {
       left: api.getOutcomeFromOffset(OFFSETS.left),
     };
 
+    if (surroundings.left === OUTCOMES.finish) {
+      api.move(DIRS.left);
+      return DIRS.right;
+    }
+
     var movesThatDontResultInDeath = {
       up: isNotDie(surroundings.up),
       right: isNotDie(surroundings.right),
