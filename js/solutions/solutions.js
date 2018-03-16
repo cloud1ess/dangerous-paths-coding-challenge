@@ -11,20 +11,44 @@ function Solutions () {
   // Refer to constants.js for <data type>
   // Offset is the relative to the players position
 
+  function willNotKillYou (outcome) {
+    return outcome !== OUTCOMES.die;
+  }
+
+  function tryToMove (api, backTrack) {
+    var surroundings = {
+      up: api.getOutcomeFromOffset({ x: 0, y: -1 }),
+      right: api.getOutcomeFromOffset({ x: 1, y: 0 }),
+      down: api.getOutcomeFromOffset({ x: 0, y: 1 }),
+      left: api.getOutcomeFromOffset({ x: -1, y: 0 }),
+    };
+
+    var movesThatDontResultInDeath = {
+      up: willNotKillYou(surroundings.up),
+      right: willNotKillYou(surroundings.right),
+      down: willNotKillYou(surroundings.down),
+      left: willNotKillYou(surroundings.left),
+    };
+
+    if (movesThatDontResultInDeath.up && backTrack !== DIRS.up) {
+      api.move(DIRS.up);
+      return DIRS.down;
+    } else if (movesThatDontResultInDeath.right && backTrack !== DIRS.right) {
+      api.move(DIRS.right);
+      return DIRS.left;
+    } else if (movesThatDontResultInDeath.down && backTrack !== DIRS.down) {
+      api.move(DIRS.down);
+      return DIRS.up;
+    } else if (movesThatDontResultInDeath.left && backTrack !== DIRS.left) {
+      api.move(DIRS.left);
+      return DIRS.right;
+    }
+  }
+
   function runSolution (index, api) {
-    var step = 0;
+    var backTrack;
     setInterval(function () {
-      api.move([
-        DIRS.down,
-        DIRS.down,
-        DIRS.right,
-        DIRS.right,
-        DIRS.up,
-        DIRS.right,
-        DIRS.right,
-        DIRS.down,
-        DIRS.down,
-      ][step++]);
+      backTrack = tryToMove(api, backTrack)
     }, 100);
   }
 
