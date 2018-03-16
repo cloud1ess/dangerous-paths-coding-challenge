@@ -47,8 +47,12 @@ function Solutions () {
 
   function runSolution (index, api) {
     var backTrack;
-    setInterval(function () {
-      backTrack = tryToMove(api, backTrack)
+    var intervalId = setInterval(function () {
+      backTrack = tryToMove(api, backTrack);
+
+      if (api.getOutcomeFromOffset() === OUTCOMES.finish) {
+        clearInterval(intervalId);
+      }
     }, 100);
   }
 
