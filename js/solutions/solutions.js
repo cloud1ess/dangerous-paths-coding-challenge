@@ -11,7 +11,6 @@ function Solutions() {
   // Refer to constants.js for <data type>
   // Offset is the relative to the players position
 
-  var previous;
   var timer;
 
   var offsets = {
@@ -21,10 +20,11 @@ function Solutions() {
     down: { x: 0, y: 1 },
   }
 
-  function getMovesAsFarAsPossible(api, startPosition) {
+  function attemptJourney(api) {
     var canMove = true;
     var moves = [];
-    var pseudoPosition = startPosition;        
+    var pseudoPosition = {x:0, y:0};   
+    var previous = undefined;     
 
     while (canMove) {
       // check all directions and see which are valid.
@@ -35,7 +35,7 @@ function Solutions() {
       }
       else {
     
-        next = getNextMoveFromValidMoves(validDirections);
+        next = getNextMoveFromValidMoves(validDirections, previous);
 
         if (next) {
           // push the next direction to the moves array
@@ -52,11 +52,10 @@ function Solutions() {
           finish = checkForFinish(pseudoPosition, api);
 
           // if so, push that move too.
-          //TODO: consider moving this up into main runSolution function.
           if (finish) {
             moves.push(finish);
             canMove = false;
-            doMoves(moves, api);
+            executeJourney(moves, api);
             window.clearInterval(timer);
           }
         } else {
@@ -66,14 +65,14 @@ function Solutions() {
     }
   }
 
-  function doMoves(moves, api) {
+  function executeJourney(moves, api) {
     moves.forEach(move => {
       api.move(move);
     });
 
   }
 
-  function getNextMoveFromValidMoves(validDirections) {
+  function getNextMoveFromValidMoves(validDirections, previous) {
     // if the direction is previous location, remove this
     if (validDirections.length !== 0) {
       next = validDirections.filter(function (direction) {
@@ -81,18 +80,6 @@ function Solutions() {
       })[0];
     }
     return next;
-  }
-
-  function runSolution(index, api) {
-
-    previous = undefined;
-
-    timer = window.setInterval(function () {
-
-      moves = getMovesAsFarAsPossible(api, {x:0, y:0});
-
-    }, 100);
-
   }
 
   function getPreviousCell(direction) {
@@ -141,6 +128,14 @@ function Solutions() {
       return DIRS.up;
     }
     return false;
+  }
+
+  function runSolution(index, api) {
+
+    timer = window.setInterval(function () {
+      moves = attemptJourney(api);
+    }, 100);
+
   }
 
   function stopSolution() {
