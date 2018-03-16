@@ -17,10 +17,10 @@ function Solutions () {
 
   function tryToMove (api, backTrack) {
     var surroundings = {
-      up: api.getOutcomeFromOffset({ x: 0, y: -1 }),
-      right: api.getOutcomeFromOffset({ x: 1, y: 0 }),
-      down: api.getOutcomeFromOffset({ x: 0, y: 1 }),
-      left: api.getOutcomeFromOffset({ x: -1, y: 0 }),
+      up: api.getOutcomeFromOffset(OFFSETS.up),
+      right: api.getOutcomeFromOffset(OFFSETS.right),
+      down: api.getOutcomeFromOffset(OFFSETS.down),
+      left: api.getOutcomeFromOffset(OFFSETS.left),
     };
 
     var movesThatDontResultInDeath = {
