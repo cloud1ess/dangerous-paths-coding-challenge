@@ -23,7 +23,8 @@ function Solutions () {
   opposites[DIRS.up] = DIRS.down;
   opposites[DIRS.left] = DIRS.right;
 
-  function getBestNextMove(api, position, history) {
+  function getBestNextMove(api, state) {
+    const {position, history} = state;
     const lastMove = history.length && history[history.length - 1].move;
     const movesAlreadyTried = history.filter(h => h.pos.x === position.x && h.pos.y === position.y).map(h => h.move)
     var moveList = Object.keys(possibleMoves)
@@ -44,7 +45,8 @@ function Solutions () {
     return moves[move](currentPosition)
   }
 
-  async function makeNextMove(api, position, history, move) {
+  async function makeNextMove(api, state, move) {
+    const {position, history} = state;
     const cellType = api.getCellTypeFromOffset(possibleMoves[move]);
     const outcome = api.getOutcomeFromOffset(possibleMoves[move]);
     if ( cellType === CELL_TYPES.disappearing && outcome === OUTCOMES.die ) {
@@ -62,23 +64,28 @@ function Solutions () {
     }
   }
 
-  async function doNextMove(api, position, history) {
-    const move = getBestNextMove(api, position, history);
-    const outcome = await makeNextMove(api, position, history, move)
+  async function doNextMove(api, state) {
+    const {position, history} = state;
+    const move = getBestNextMove(api, state);
+    const outcome = await makeNextMove(api, state, move)
     api.move(move);
-    history.push({pos: position, move});
-    position = getNewPosition(position, move);
-    if (outcome !== OUTCOMES.finish) {
-      doNextMove(api, position, history);
+    return {
+      history: history.concat({pos: position, move}),
+      position: getNewPosition(position, move),
+      outcome
     }
   }
 
-  function runSolution (index, api) {
-    const history = []
-    let outcome;
-    let position = {x: 0, y: 0};
+  async function runSolution (index, api) {
+    let state = {
+      history: [],
+      position: {x: 0, y: 0}
+    };
 
-    doNextMove(api, position, history);
+    while (state.outcome !== OUTCOMES.finish) {
+      state = await doNextMove(api, state);
+    }
+
   }
 
   function stopSolution() {
