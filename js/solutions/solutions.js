@@ -82,6 +82,8 @@ function Solutions() {
 
   function runSolution(index, api) {
 
+    previous = undefined;
+
     timer = window.setInterval(function () {
 
       var currentPosition = {x:0, y:0};
@@ -96,16 +98,16 @@ function Solutions() {
   }
 
   function getPreviousCell(direction) {
-    if (direction == DIRS.right) {
+    if (direction === DIRS.right) {
       return DIRS.left;
     }
-    if (direction == DIRS.left) {
+    if (direction === DIRS.left) {
       return DIRS.right;
     }
-    if (direction == DIRS.up) {
+    if (direction === DIRS.up) {
       return DIRS.down;
     }
-    if (direction = DIRS.down) {
+    if (direction === DIRS.down) {
       return DIRS.up;
     }
   }
