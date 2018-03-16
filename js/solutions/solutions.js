@@ -34,12 +34,8 @@ function Solutions() {
         canMove = false;
       }
       else {
-        // if the direction is previous location, remove this
-        if (validDirections.length !== 0) {
-          next = validDirections.filter(function (direction) {
-            return direction !== previous;
-          })[0];
-        }
+    
+        next = getNextMoveFromValidMoves(validDirections);
 
         if (next) {
           // push the next direction to the moves array
@@ -60,17 +56,14 @@ function Solutions() {
           if (finish) {
             moves.push(finish);
             canMove = false;
+            doMoves(moves, api);
             window.clearInterval(timer);
           }
         } else {
           canMove = false;
         }
-
-        
       }
     }
-
-    return moves;
   }
 
   function doMoves(moves, api) {
@@ -80,18 +73,23 @@ function Solutions() {
 
   }
 
+  function getNextMoveFromValidMoves(validDirections) {
+    // if the direction is previous location, remove this
+    if (validDirections.length !== 0) {
+      next = validDirections.filter(function (direction) {
+        return direction !== previous;
+      })[0];
+    }
+    return next;
+  }
+
   function runSolution(index, api) {
 
     previous = undefined;
 
     timer = window.setInterval(function () {
 
-      var currentPosition = {x:0, y:0};
-      moves = getMovesAsFarAsPossible(api, currentPosition);
-
-      if(moves.length !== 0) {
-        doMoves(moves, api);
-      }
+      moves = getMovesAsFarAsPossible(api, {x:0, y:0});
 
     }, 100);
 
