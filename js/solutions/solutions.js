@@ -11,7 +11,7 @@ function Solutions () {
   // Refer to constants.js for <data type>
   // Offset is the relative to the players position
 
-  function willNotKillYou (outcome) {
+  function isNotDie (outcome) {
     return outcome !== OUTCOMES.die;
   }
 
@@ -24,10 +24,10 @@ function Solutions () {
     };
 
     var movesThatDontResultInDeath = {
-      up: willNotKillYou(surroundings.up),
-      right: willNotKillYou(surroundings.right),
-      down: willNotKillYou(surroundings.down),
-      left: willNotKillYou(surroundings.left),
+      up: isNotDie(surroundings.up),
+      right: isNotDie(surroundings.right),
+      down: isNotDie(surroundings.down),
+      left: isNotDie(surroundings.left),
     };
 
     if (movesThatDontResultInDeath.up && backTrack !== DIRS.up) {
