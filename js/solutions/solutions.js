@@ -16,6 +16,10 @@ function Solutions () {
   }
 
   function tryToMove (api, backTrack) {
+    if (api.getOutcomeFromOffset() === OUTCOMES.finish) {
+      return;
+    }
+
     var surroundings = {
       up: api.getOutcomeFromOffset(OFFSETS.up),
       right: api.getOutcomeFromOffset(OFFSETS.right),
@@ -47,9 +51,13 @@ function Solutions () {
     } else if (movesThatDontResultInDeath.left && backTrack !== DIRS.left) {
       api.move(DIRS.left);
       backTrack = DIRS.right;
+    } else {
+      setTimeout(function () {
+        tryToMove(api, backTrack)
+      }, 100);
     }
 
-    tryToMove(api, backTrack)
+    tryToMove(api, backTrack);
   }
 
   function runSolution (index, api) {
