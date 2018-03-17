@@ -37,28 +37,23 @@ function Solutions () {
 
     if (movesThatDontResultInDeath.up && backTrack !== DIRS.up) {
       api.move(DIRS.up);
-      return DIRS.down;
+      backTrack = DIRS.down;
     } else if (movesThatDontResultInDeath.right && backTrack !== DIRS.right) {
       api.move(DIRS.right);
-      return DIRS.left;
+      backTrack = DIRS.left;
     } else if (movesThatDontResultInDeath.down && backTrack !== DIRS.down) {
       api.move(DIRS.down);
-      return DIRS.up;
+      backTrack = DIRS.up;
     } else if (movesThatDontResultInDeath.left && backTrack !== DIRS.left) {
       api.move(DIRS.left);
-      return DIRS.right;
+      backTrack = DIRS.right;
     }
+
+    tryToMove(api, backTrack)
   }
 
   function runSolution (index, api) {
-    var backTrack;
-    var intervalId = setInterval(function () {
-      backTrack = tryToMove(api, backTrack);
-
-      if (api.getOutcomeFromOffset() === OUTCOMES.finish) {
-        clearInterval(intervalId);
-      }
-    }, 100);
+    tryToMove(api, null);
   }
 
   function stopSolution() {
