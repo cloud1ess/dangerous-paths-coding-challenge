@@ -15,7 +15,7 @@ function Solutions () {
     return outcome !== OUTCOMES.die;
   }
 
-  function tryToMove (api, backTrack) {
+  function tryToMove (api, cameFrom) {
     if (api.getOutcomeFromOffset() === OUTCOMES.finish) {
       return;
     }
@@ -32,25 +32,25 @@ function Solutions () {
       return DIRS.right;
     }
 
-    if (isNotDie(surroundings.up) && backTrack !== DIRS.up) {
+    if (isNotDie(surroundings.up) && cameFrom !== DIRS.up) {
       api.move(DIRS.up);
-      backTrack = DIRS.down;
-    } else if (isNotDie(surroundings.right) && backTrack !== DIRS.right) {
+      cameFrom = DIRS.down;
+    } else if (isNotDie(surroundings.right) && cameFrom !== DIRS.right) {
       api.move(DIRS.right);
-      backTrack = DIRS.left;
-    } else if (isNotDie(surroundings.down) && backTrack !== DIRS.down) {
+      cameFrom = DIRS.left;
+    } else if (isNotDie(surroundings.down) && cameFrom !== DIRS.down) {
       api.move(DIRS.down);
-      backTrack = DIRS.up;
-    } else if (isNotDie(surroundings.left) && backTrack !== DIRS.left) {
+      cameFrom = DIRS.up;
+    } else if (isNotDie(surroundings.left) && cameFrom !== DIRS.left) {
       api.move(DIRS.left);
-      backTrack = DIRS.right;
+      cameFrom = DIRS.right;
     } else {
       setTimeout(function () {
-        tryToMove(api, backTrack)
+        tryToMove(api, cameFrom)
       }, 100);
     }
 
-    tryToMove(api, backTrack);
+    tryToMove(api, cameFrom);
   }
 
   function runSolution (index, api) {
