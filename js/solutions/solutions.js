@@ -34,16 +34,16 @@ function Solutions () {
 
     if (isNotDie(surroundings.up) && cameFrom !== DIRS.up) {
       api.move(DIRS.up);
-      cameFrom = DIRS.down;
+      cameFrom = OPPOSITES[DIRS.up];
     } else if (isNotDie(surroundings.right) && cameFrom !== DIRS.right) {
       api.move(DIRS.right);
-      cameFrom = DIRS.left;
+      cameFrom = OPPOSITES[DIRS.right];
     } else if (isNotDie(surroundings.down) && cameFrom !== DIRS.down) {
       api.move(DIRS.down);
-      cameFrom = DIRS.up;
+      cameFrom = OPPOSITES[DIRS.down];
     } else if (isNotDie(surroundings.left) && cameFrom !== DIRS.left) {
       api.move(DIRS.left);
-      cameFrom = DIRS.right;
+      cameFrom = OPPOSITES[DIRS.left];
     } else {
       setTimeout(function () {
         tryToMove(api, cameFrom)
