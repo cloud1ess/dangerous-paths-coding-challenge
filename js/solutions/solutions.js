@@ -32,23 +32,16 @@ function Solutions () {
       return DIRS.right;
     }
 
-    var movesThatDontResultInDeath = {
-      up: isNotDie(surroundings.up),
-      right: isNotDie(surroundings.right),
-      down: isNotDie(surroundings.down),
-      left: isNotDie(surroundings.left),
-    };
-
-    if (movesThatDontResultInDeath.up && backTrack !== DIRS.up) {
+    if (isNotDie(surroundings.up) && backTrack !== DIRS.up) {
       api.move(DIRS.up);
       backTrack = DIRS.down;
-    } else if (movesThatDontResultInDeath.right && backTrack !== DIRS.right) {
+    } else if (isNotDie(surroundings.right) && backTrack !== DIRS.right) {
       api.move(DIRS.right);
       backTrack = DIRS.left;
-    } else if (movesThatDontResultInDeath.down && backTrack !== DIRS.down) {
+    } else if (isNotDie(surroundings.down) && backTrack !== DIRS.down) {
       api.move(DIRS.down);
       backTrack = DIRS.up;
-    } else if (movesThatDontResultInDeath.left && backTrack !== DIRS.left) {
+    } else if (isNotDie(surroundings.left) && backTrack !== DIRS.left) {
       api.move(DIRS.left);
       backTrack = DIRS.right;
     } else {
