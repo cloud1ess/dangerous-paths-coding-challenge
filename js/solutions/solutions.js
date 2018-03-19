@@ -23,22 +23,18 @@ function Solutions () {
   oppositeMove[DIRS.up] = DIRS.down;
   oppositeMove[DIRS.left] = DIRS.right;
 
-  function getPossibleMoves(api, path, position) {
-    const lastMove = path.length > 0 ? path[path.length - 1].move : undefined;
-    const movesAlreadyTried = path.filter(p => p.position.x === position.x && p.position.y === position.y).map(p => p.move)
+  function getPossibleMoves(api, route, position) {
+    const lastMove = route.length > 0 ? route[route.length - 1].move : undefined;
     var moveList = Object.keys(offsetForMove)
-      .filter(m => m !== oppositeMove[lastMove])
-      .filter(m => !movesAlreadyTried.includes(m))
-      .concat(movesAlreadyTried)
-      .concat(lastMove ? oppositeMove[lastMove] : []);
+      .filter(m => m !== oppositeMove[lastMove]);
     return moveList
       .map((move) => {
         return {
           move: move,
-          type: api.getCellTypeFromOffset(getOffset(position, move))
+          cellType: api.getCellTypeFromOffset(getOffset(position, move))
         }
       })
-      .filter(mt => mt.type === CELL_TYPES.path || mt.type === CELL_TYPES.disappearing)
+      .filter(mt => mt.cellType === CELL_TYPES.path || mt.cellType === CELL_TYPES.disappearing)
       .map(mt => mt.move);
   }
 
@@ -81,27 +77,59 @@ function Solutions () {
     api.move(move);
   }
 
-  function findPath (api) {
-    let path = [];
-    let position = { x: 0, y: 0 };
-    let outcome;
-    while (outcome !== OUTCOMES.finish) {
-      const moves = getPossibleMoves(api, path, position);
-      const move = moves[0];
-      outcome = api.getOutcomeFromOffset(getOffset(position, move));
-      path.push({
-        position,
-        move,
-        moves
-      });
-      position = getNewPosition(position, move);
+  function findBestPath (api) {
+    let possiblePaths = [
+      {
+        currentPosition: { x: 0, y: 0 },
+        route: [],
+        outcome: undefined
+      }
+    ];
+
+    while (!possiblePaths.some(pp => pp.outcome === OUTCOMES.finish)) {
+      let newPaths = []
+      possiblePaths.forEach((pp) => {
+        const {currentPosition, route} = pp;
+        const moves = getPossibleMoves(api, route, currentPosition);
+        moves.forEach((move, j) => {
+          const outcome = api.getOutcomeFromOffset(getOffset(currentPosition, move));
+          const newPosition = getNewPosition(currentPosition, move);
+          if (j > 0) {
+            newPaths.push({
+              currentPosition: newPosition,
+              route: cloneRoute(route).concat([{
+                position: currentPosition,
+                move
+              }]),
+              outcome
+            });
+          } else {
+            pp.currentPosition = newPosition;
+            pp.route = cloneRoute(route).concat([{
+              position: currentPosition,
+              move
+            }]);
+            pp.outcome = outcome
+          }
+        })
+      })
+      possiblePaths = possiblePaths.concat(newPaths)
     }
-    return path;
+    return possiblePaths.filter(pp => pp.outcome === OUTCOMES.finish)[0];
+  }
+
+  function cloneRoute (route) {
+    return route.map((r) => {
+      return {
+        position: { x: r.position.x, y: r.position.y },
+        move: r.move
+      }
+    });
   }
 
   async function runSolution (index, api) {
-    const path = findPath(api);
-    for (const move of path.map(p => p.move)){
+    const bestPath = findBestPath(api);
+    for (const move of bestPath.route.map(p => p.move)){
       await makeNextMove(api, move);
     }
   }
