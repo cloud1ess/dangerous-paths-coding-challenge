@@ -11,29 +11,35 @@ function Solutions () {
   // Refer to constants.js for <data type>
   // Offset is the relative to the players position
 
-  const possibleMoves = {}
-  possibleMoves[DIRS.down] = {x:0, y:1};
-  possibleMoves[DIRS.right] = {x:1, y:0};
-  possibleMoves[DIRS.up] = {x:0, y:-1};
-  possibleMoves[DIRS.left] = {x:-1, y:0};
+  const offsetForMove = {}
+  offsetForMove[DIRS.down] = {x:0, y:1};
+  offsetForMove[DIRS.right] = {x:1, y:0};
+  offsetForMove[DIRS.up] = {x:0, y:-1};
+  offsetForMove[DIRS.left] = {x:-1, y:0};
 
-  const opposites = {}
-  opposites[DIRS.down] = DIRS.up;
-  opposites[DIRS.right] = DIRS.left;
-  opposites[DIRS.up] = DIRS.down;
-  opposites[DIRS.left] = DIRS.right;
+  const oppositeMove = {}
+  oppositeMove[DIRS.down] = DIRS.up;
+  oppositeMove[DIRS.right] = DIRS.left;
+  oppositeMove[DIRS.up] = DIRS.down;
+  oppositeMove[DIRS.left] = DIRS.right;
 
-  function getBestNextMove(api, state) {
-    const {position, history} = state;
-    const lastMove = history.length && history[history.length - 1].move;
-    const movesAlreadyTried = history.filter(h => h.pos.x === position.x && h.pos.y === position.y).map(h => h.move)
-    var moveList = Object.keys(possibleMoves)
-      .filter(m => m !== opposites[lastMove])
-      .filter(m => movesAlreadyTried.indexOf(m) === -1)
+  function getPossibleMoves(api, path, position) {
+    const lastMove = path.length > 0 ? path[path.length - 1].move : undefined;
+    const movesAlreadyTried = path.filter(p => p.position.x === position.x && p.position.y === position.y).map(p => p.move)
+    var moveList = Object.keys(offsetForMove)
+      .filter(m => m !== oppositeMove[lastMove])
+      .filter(m => !movesAlreadyTried.includes(m))
       .concat(movesAlreadyTried)
-      .concat(opposites[lastMove])
-    return moveList.map((move) => { return {move: move, type: api.getCellTypeFromOffset(possibleMoves[move])}})
-      .filter(mt => mt.type === CELL_TYPES.path || mt.type === CELL_TYPES.disappearing)[0].move
+      .concat(lastMove ? oppositeMove[lastMove] : []);
+    return moveList
+      .map((move) => {
+        return {
+          move: move,
+          type: api.getCellTypeFromOffset(getOffset(position, move))
+        }
+      })
+      .filter(mt => mt.type === CELL_TYPES.path || mt.type === CELL_TYPES.disappearing)
+      .map(mt => mt.move);
   }
 
   function getNewPosition(currentPosition, move) {
@@ -45,47 +51,59 @@ function Solutions () {
     return moves[move](currentPosition)
   }
 
-  async function makeNextMove(api, state, move) {
-    const {position, history} = state;
-    const cellType = api.getCellTypeFromOffset(possibleMoves[move]);
-    const outcome = api.getOutcomeFromOffset(possibleMoves[move]);
+  function getOffset(position, move) {
+    return {
+      x: position.x + offsetForMove[move].x,
+      y: position.y + offsetForMove[move].y,
+    }
+  }
+
+  function waitForNextMove(api, move) {
+    const cellType = api.getCellTypeFromOffset(offsetForMove[move]);
+    const outcome = api.getOutcomeFromOffset(offsetForMove[move]);
     if ( cellType === CELL_TYPES.disappearing && outcome === OUTCOMES.die ) {
       return new Promise(function(resolve) {
         const handle = setInterval(function () {
-          const outcome = api.getOutcomeFromOffset(possibleMoves[move]);
+          const outcome = api.getOutcomeFromOffset(offsetForMove[move]);
           if ( outcome === OUTCOMES.survive ) {
             clearInterval(handle)
-            resolve(outcome);
+            resolve();
           }
         }, 50);
       })
     } else {
-      return Promise.resolve(outcome);
+      return Promise.resolve();
     }
   }
 
-  async function doNextMove(api, state) {
-    const {position, history} = state;
-    const move = getBestNextMove(api, state);
-    const outcome = await makeNextMove(api, state, move)
+  async function makeNextMove(api, move) {
+    await waitForNextMove(api, move);
     api.move(move);
-    return {
-      history: history.concat({pos: position, move}),
-      position: getNewPosition(position, move),
-      outcome
+  }
+
+  function findPath (api) {
+    let path = [];
+    let position = { x: 0, y: 0 };
+    let outcome;
+    while (outcome !== OUTCOMES.finish) {
+      const moves = getPossibleMoves(api, path, position);
+      const move = moves[0];
+      outcome = api.getOutcomeFromOffset(getOffset(position, move));
+      path.push({
+        position,
+        move,
+        moves
+      });
+      position = getNewPosition(position, move);
     }
+    return path;
   }
 
   async function runSolution (index, api) {
-    let state = {
-      history: [],
-      position: {x: 0, y: 0}
-    };
-
-    while (state.outcome !== OUTCOMES.finish) {
-      state = await doNextMove(api, state);
+    const path = findPath(api);
+    for (const move of path.map(p => p.move)){
+      await makeNextMove(api, move);
     }
-
   }
 
   function stopSolution() {
