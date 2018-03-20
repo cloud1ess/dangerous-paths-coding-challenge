@@ -6,18 +6,12 @@ class Runner {
     this.finishPosition = Utility.findFinishPosition(api);
     this.checkpoints = Utility.findCheckpoints(api);
     this.loopCnt = 0
-    this.semaphore = true;
     this.target = this.checkpoints.length > 0 ? this.checkpoints.pop() : this.finishPosition;
   }
 
   async loop() {
     this.loopCnt++;
     console.log('loop cnt: ', this.loopCnt++);
-    if(!this.semaphore){
-      console.log("semaphore is red");
-      return;
-    }
-    this.semaphore = false;
 
     console.log("currentPosition", this.currentPosition);
     const nextMove = this.getNextMove();
@@ -33,7 +27,6 @@ class Runner {
     const cellType = this.api.getCellTypeFromOffset(DIR_OFFSET[nextMove]);
     if (cellType === CELL_TYPES.disappearing) {
       await new Promise((resolve, reject) => setTimeout(resolve, this.speed / 2));
-      this.semaphore = true
       this.loop(this.api);
       return;
     }
@@ -51,8 +44,6 @@ class Runner {
     if (this.checkpoints.length === 0 && currentOutcome === OUTCOMES.finish) return;
     if (currentOutcome === OUTCOMES.die) return;
 
-    //await new Promise((resolve, reject) => setTimeout(resolve, this.speed));
-    this.semaphore = true
     this.loop(this.api);
   }
 

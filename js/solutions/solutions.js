@@ -9,21 +9,20 @@ function Solutions() {
   //
   // Refer to constants.js for <data type>
   // Offset is the relative to the players position
+  let runner 
 
   async function runSolution(index, api) {
     console.clear();
     console.log("Running scenario: ", Scenarios[index].name);
 
-    const runner = new Runner(index,api);
-    
-    // if (index === 4) {
-    //   currentPosition = { x: -1, y: 0 };
-    // }
+    runner = new Runner(index,api);
 
     await runner.loop();
   }
 
-  function stopSolution() {}
+  function stopSolution() {
+    runner = null;
+  }
 
   return {
     runSolution: runSolution,
