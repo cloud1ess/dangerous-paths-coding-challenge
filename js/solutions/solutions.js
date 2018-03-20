@@ -110,11 +110,15 @@ function Solutions () {
     return moves.concat(move);
   }
 
-  async function runSolution (index, api) {
-    const bestPath = findBestPath(api);
-    for (const move of bestPath.moves){
+  async function followPath (api, path) {
+    for (const move of path.moves){
       await makeNextMove(api, move);
     }
+  }
+
+  function runSolution (index, api) {
+    const bestPath = findBestPath(api);
+    followPath(api, bestPath);
   }
 
   function stopSolution() {
