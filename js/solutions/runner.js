@@ -5,23 +5,35 @@ class Runner {
     this.currentPosition = { x: 0, y: 0 };
     this.finishPosition = Utility.findFinishPosition(api);
     this.checkpoints = Utility.findCheckpoints(api);
-
+    this.loopCnt = 0
+    this.semaphore = true;
     this.target = this.checkpoints.length > 0 ? this.checkpoints.pop() : this.finishPosition;
   }
 
   async loop() {
+    this.loopCnt++;
+    console.log('loop cnt: ', this.loopCnt++);
+    if(!this.semaphore){
+      console.log("semaphore is red");
+      return;
+    }
+    this.semaphore = false;
+
+    console.log("currentPosition", this.currentPosition);
     const nextMove = this.getNextMove();
     const outcome = this.api.getOutcomeFromOffset(DIR_OFFSET[nextMove]);
 
     if (nextMove && outcome !== OUTCOMES.die) {
-      this.api.move(nextMove);
-      this.currentPosition = Utility.addOffset(this.currentPosition, DIR_OFFSET[nextMove]);
       this.previousMove = nextMove;
+      console.log("loop call offset: ", this.currentPosition, DIR_OFFSET[nextMove]);
+      this.currentPosition = Utility.addOffset(this.currentPosition, DIR_OFFSET[nextMove]);
+      this.api.move(nextMove);
     }
 
     const cellType = this.api.getCellTypeFromOffset(DIR_OFFSET[nextMove]);
     if (cellType === CELL_TYPES.disappearing) {
-      await new Promise((resolve, reject) => setTimeout(resolve, this.speed/2));
+      await new Promise((resolve, reject) => setTimeout(resolve, this.speed / 2));
+      this.semaphore = true
       this.loop(this.api);
       return;
     }
@@ -39,7 +51,8 @@ class Runner {
     if (this.checkpoints.length === 0 && currentOutcome === OUTCOMES.finish) return;
     if (currentOutcome === OUTCOMES.die) return;
 
-    await new Promise((resolve, reject) => setTimeout(resolve, this.speed));
+    //await new Promise((resolve, reject) => setTimeout(resolve, this.speed));
+    this.semaphore = true
     this.loop(this.api);
   }
 
@@ -63,6 +76,7 @@ class Runner {
       if (Utility.getOpposite(this.previousMove) === dir) continue;
 
       if (this.api.getCellTypeFromOffset(DIR_OFFSET[dir])) {
+        console.log("findPaths call offset: ", this.currentPosition, DIR_OFFSET[dir]);
         const position = Utility.addOffset(this.currentPosition, DIR_OFFSET[dir]);
         const distance = Utility.delta(position, this.target);
         paths.push({ direction: dir, distance });
@@ -70,5 +84,15 @@ class Runner {
     }
 
     return paths;
+  }
+
+  get currentPosition() {
+    console.log('get currentPosition:', this._currentPosition);
+    return this._currentPosition;
+  }
+
+  set currentPosition(position) {
+    console.log('set currentPosition:', this._currentPosition, position);
+    this._currentPosition = position;
   }
 }

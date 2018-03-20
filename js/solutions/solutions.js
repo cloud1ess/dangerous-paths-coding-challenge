@@ -11,19 +11,16 @@ function Solutions() {
   // Offset is the relative to the players position
 
   async function runSolution(index, api) {
+    console.clear();
     console.log("Running scenario: ", Scenarios[index].name);
 
     const runner = new Runner(index,api);
     
-    if (index === 4) {
-      currentPosition = { x: -1, y: 0 };
-    }
-    if (index === 5) {
-      currentPosition = { x: -1, y: 0 };
-    }
-    await runner.loop();
+    // if (index === 4) {
+    //   currentPosition = { x: -1, y: 0 };
+    // }
 
-    
+    await runner.loop();
   }
 
   function stopSolution() {}
