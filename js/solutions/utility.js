@@ -22,24 +22,7 @@ class Utility {
     return checkpoints;
   }
 
-  static findPaths(api) {
-    console.log("findPaths target: ", target);
-    const paths = [];
-
-    for (let dir in DIR_OFFSET) {
-      if (getOpposite(previousMove) === dir) continue;
-
-      if (api.getCellTypeFromOffset(DIR_OFFSET[dir])) {
-        distance = Utility.delta(addOffset(currentPosition, DIR_OFFSET[dir]), target);
-        paths.push({ direction: dir, distance });
-      }
-    }
-
-    return paths;
-  }
-
   static addOffset(point, offset) {
-    console.log("add offset: ", point, offset);
     return { x: point.x + offset.x, y: point.y + offset.y };
   }
 
