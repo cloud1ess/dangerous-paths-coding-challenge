@@ -11,7 +11,11 @@ function Solutions () {
   // Refer to constants.js for <data type>
   // Offset is the relative to the players position
 
-  var history;
+  var history, intervalId
+
+  function initHistory () {
+    history = [{x:0, y:0}]
+  }
 
   function getOutcomes (api) {
     return {
@@ -22,21 +26,21 @@ function Solutions () {
     }
   }
 
-  function getPosition (direction) {
-    var previousIndex = history[history.length - 1]
+  function getPositionRelativeToStart (direction) {
+    var currentPositionRelativeToStart = history[history.length - 1]
 
-    var change = {
+    var offset = {
       up: {x:0, y:-1},
       down: {x:0, y:1},
       left: {x:-1, y:0},
       right: {x:1, y:0}
     }[direction]
 
-    return {x: previousIndex.x + change.x, y: previousIndex.y + change.y}
+    return {x: currentPositionRelativeToStart.x + offset.x, y: currentPositionRelativeToStart.y + offset.y}
   }
 
-  function beenThereBefore (direction) {
-    var position = getPosition(direction)
+  function timesVisited (direction) {
+    var position = getPositionRelativeToStart(direction)
 
     var count = 0
 
@@ -49,7 +53,7 @@ function Solutions () {
     return count
   }
 
-  function tryAllOutcomes (api, outcomes, tryRevisit) {
+  function tryAllOutcomes (api, outcomes, revisitLimit) {
     for (var direction in outcomes) {
       if (outcomes[direction] === OUTCOMES.finish) {
         api.move(DIRS[direction])
@@ -59,42 +63,47 @@ function Solutions () {
 
     for (var direction in outcomes) {
       if (outcomes[direction] === OUTCOMES.survive) {
-        if (beenThereBefore(direction) <= tryRevisit) {
+        if (timesVisited(direction) <= revisitLimit) {
           api.move(DIRS[direction])
-          history.push(getPosition(direction))
+          history.push(getPositionRelativeToStart(direction))
           return OUTCOMES.survive
         }
       }
     }
   }
 
-  function attemptMove (api, retryCount) {
-    var outcomes = getOutcomes(api, outcomes);
-    var newOutcome = tryAllOutcomes(api, outcomes, retryCount)
+  function attemptMove (api, revisitLimit) {
+    revisitLimit = revisitLimit || 0
+    var outcomes = getOutcomes(api, outcomes)
+    var newOutcome = tryAllOutcomes(api, outcomes, revisitLimit)
 
     if (newOutcome === OUTCOMES.finish) {
       return true
     } else if (newOutcome === OUTCOMES.survive) {
       return false
-    } else if (retryCount < 100) { // arbitrarily give up after all moves resulting in survival have been tried 100 times
-      return attemptMove(api, retryCount + 1)
+    } else if (revisitLimit < 100) { // arbitrarily give up after all moves resulting in survival have been tried 100 times
+      return attemptMove(api, revisitLimit + 1)
     } else {
       return false
     }
   }
 
   function runSolution (index, api) {
-    history = [{x:0, y:0}]
+    if (intervalId) {
+      clearInterval(intervalId)
+      intervalId = null
+    }
 
-    var intervalId = setInterval(function () {
-      var done = attemptMove(api, 0)
-      if (done) {
-        clearInterval(intervalId)
-      }
+    initHistory()
+
+    intervalId = setInterval(function () {
+      attemptMove(api)
     }, 50)
   }
 
   function stopSolution() {
+    clearInterval(intervalId)
+    intervalId = null
   }
 
   return {
