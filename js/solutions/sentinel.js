@@ -22,10 +22,10 @@ class Sentinel {
 
     const cellType = this.api.getCellTypeFromOffset(this.currentPosition);
     if (cellType === CELL_TYPES.checkpoints) {
-      const checkpoints = this.checkpoints.filter(cell => {
-        return !(cell.x === currentPosition.x && cell.y === currentPosition.y);
+      this.checkpoints = this.checkpoints.filter(cell => {
+        return !(cell.x === this.currentPosition.x && cell.y === this.currentPosition.y);
       });
-      this.target = this.checkpoints.length > 0 ? this.checkpoints.pop() : finishPosition;
+      this.target = this.checkpoints.length > 0 ? this.checkpoints.shift() : finishPosition;
     }
 
     return this.getMoves();

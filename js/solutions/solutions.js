@@ -18,12 +18,15 @@ function Solutions() {
     const sentinel = new Sentinel(index, api)
     const moves = sentinel.getMoves();
     console.log('moves: ', moves);
-    // runner = new Runner(index,api);
-    // await runner.loop();
+    runner = new Runner(api, moves);
+    console.log('runner status: walk');
+    await runner.walk();
+
   }
 
   function stopSolution() {
     runner = null;
+    moves = null;
   }
 
   return {

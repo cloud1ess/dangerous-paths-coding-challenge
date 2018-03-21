@@ -35,4 +35,8 @@ class Utility {
   static getOpposite(dir) {
     return OPPOSITE[dir];
   }
+
+  static async wait(ms){
+    return new Promise((resolve, reject) => setTimeout(resolve, ms));
+  }
 }
