@@ -25,12 +25,18 @@ class Sentinel {
       this.checkpoints = this.checkpoints.filter(cell => {
         return !(cell.x === this.currentPosition.x && cell.y === this.currentPosition.y);
       });
-      this.target = this.checkpoints.length > 0 ? this.checkpoints.shift() : finishPosition;
+
+      if (this.equal(this.target, this.currentPosition)) {
+        this.target = this.checkpoints.length > 0 ? this.checkpoints.shift() : this.finishPosition;
+      }
     }
 
     return this.getMoves();
   }
 
+  equal(point1, point2) {
+    return point1['x'] === point2['x'] && point1['y'] === point2['y'];
+  }
   getNextMove() {
     const paths = this.findPaths();
 

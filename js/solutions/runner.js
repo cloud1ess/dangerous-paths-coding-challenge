@@ -23,9 +23,10 @@ class Runner {
       this.nextMove = null;
     }
 
-    const currentOutcome = this.api.getOutcomeFromOffset({ x: 0, y: 0 });
-    if (currentOutcome === OUTCOMES.finish || currentOutcome === OUTCOMES.die) return;
-
+    if (this.moves.length === 0) {
+      const currentOutcome = this.api.getOutcomeFromOffset({ x: 0, y: 0 });
+      if (currentOutcome === OUTCOMES.finish || currentOutcome === OUTCOMES.die) return;
+    }
     await Utility.wait(this.speed);
     await this.walk(this.api);
   }
