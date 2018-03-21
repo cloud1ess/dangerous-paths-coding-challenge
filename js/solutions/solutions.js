@@ -15,9 +15,11 @@ function Solutions() {
     console.clear();
     console.log("Running scenario: ", Scenarios[index].name);
 
-    runner = new Runner(index,api);
-
-    await runner.loop();
+    const sentinel = new Sentinel(index, api)
+    const moves = sentinel.getMoves();
+    console.log('moves: ', moves);
+    // runner = new Runner(index,api);
+    // await runner.loop();
   }
 
   function stopSolution() {

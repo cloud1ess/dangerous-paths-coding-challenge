@@ -23,8 +23,6 @@ class Utility {
   }
 
   static addOffset(point, offset) {
-    console.log('addOffset input : ', point, offset);
-    console.log('addOffset result : ', { x: point.x + offset.x, y: point.y + offset.y });
     return { x: point.x + offset.x, y: point.y + offset.y };
   }
 
