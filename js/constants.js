@@ -30,4 +30,4 @@ var OPPOSITE = {
   right: "left"
 };
 
-var SPEED = 30
+var GRID_MAX_SIZE = 10

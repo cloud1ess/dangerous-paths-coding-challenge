@@ -1,7 +1,7 @@
 class Utility {
-  static findFinishPosition(api) {
-    for (let x = -10; x < 10; x++) {
-      for (let y = -10; y < 10; y++) {
+  static findFinishPosition(api,) {
+    for (let x = -GRID_MAX_SIZE; x < GRID_MAX_SIZE; x++) {
+      for (let y = -GRID_MAX_SIZE; y < GRID_MAX_SIZE; y++) {
         const outcome = api.getOutcomeFromOffset({ x, y });
         if (outcome === OUTCOMES.finish) {
           return { x, y };
@@ -9,11 +9,11 @@ class Utility {
       }
     }
   }
-  
+
   static findCheckpoints(api) {
     var checkpoints = [];
-    for (let x = -10; x < 10; x++) {
-      for (let y = -10; y < 10; y++) {
+    for (let x = -GRID_MAX_SIZE; x < GRID_MAX_SIZE; x++) {
+      for (let y = -GRID_MAX_SIZE; y < GRID_MAX_SIZE; y++) {
         const cellType = api.getCellTypeFromOffset({ x, y });
         if (cellType === CELL_TYPES.checkpoints) {
           checkpoints.push({ x, y });
