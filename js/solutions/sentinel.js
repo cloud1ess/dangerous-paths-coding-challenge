@@ -1,12 +1,11 @@
 class Sentinel {
-  constructor(index, api) {
+  constructor(api) {
     this.api = api;
-    this.speed = 100;
+    this.moves = [];
     this.currentPosition = { x: 0, y: 0 };
     this.finishPosition = Utility.findFinishPosition(api);
     this.checkpoints = Utility.findCheckpoints(api);
-    this.target = this.checkpoints.length > 0 ? this.checkpoints.pop() : this.finishPosition;
-    this.moves = [];
+    this.target = this.checkpoints.length > 0 ? this.checkpoints.shift() : this.finishPosition;
   }
 
   getMoves() {
@@ -22,9 +21,7 @@ class Sentinel {
 
     const cellType = this.api.getCellTypeFromOffset(this.currentPosition);
     if (cellType === CELL_TYPES.checkpoints) {
-      this.checkpoints = this.checkpoints.filter(cell => {
-        return !(cell.x === this.currentPosition.x && cell.y === this.currentPosition.y);
-      });
+      this.checkpoints = this.filterCheckpoint(this.checkpoints, this.currentPosition)
 
       if (this.equal(this.target, this.currentPosition)) {
         this.target = this.checkpoints.length > 0 ? this.checkpoints.shift() : this.finishPosition;
@@ -33,10 +30,17 @@ class Sentinel {
 
     return this.getMoves();
   }
+  
+  filterCheckpoint(checkpoints, position){
+    return checkpoints.filter(cell => {
+      return !(cell.x === position.x && cell.y === position.y);
+    });
+  }
 
   equal(point1, point2) {
     return point1['x'] === point2['x'] && point1['y'] === point2['y'];
   }
+  
   getNextMove() {
     const paths = this.findPaths();
 

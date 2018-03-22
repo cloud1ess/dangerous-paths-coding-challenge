@@ -9,6 +9,7 @@ class Utility {
       }
     }
   }
+  
   static findCheckpoints(api) {
     var checkpoints = [];
     for (let x = -10; x < 10; x++) {

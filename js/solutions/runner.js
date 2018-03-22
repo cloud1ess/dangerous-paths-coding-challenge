@@ -1,9 +1,9 @@
 class Runner {
-  constructor(api, moves) {
+  constructor(api, moves, speed = 10) {
     this.nextMove;
     this.api = api;
     this.moves = moves;
-    this.speed = 10;
+    this.speed = speed;
   }
 
   async walk() {
