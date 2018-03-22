@@ -16,9 +16,10 @@ function Solutions() {
 
     const sentinel = new Sentinel(api)
     const moves = sentinel.getMoves();
-    
+
     const runner = new Runner(api, moves);
-    await runner.walk();
+    const result = await runner.walk();
+    console.log("Winner?  ", result);
   }
 
   function stopSolution() {}

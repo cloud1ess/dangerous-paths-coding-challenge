@@ -7,6 +7,12 @@ class Runner {
   }
 
   async walk() {
+    if (this.moves.length === 0) {
+      const currentOutcome = this.api.getOutcomeFromOffset({ x: 0, y: 0 });
+      if (currentOutcome === OUTCOMES.finish) return true;
+      return false;
+    }
+
     this.refreshNextMove();
 
     const nextOutcome = this.api.getOutcomeFromOffset(DIR_OFFSET[this.nextMove]);
@@ -22,13 +28,9 @@ class Runner {
       this.api.move(this.nextMove);
       this.nextMove = null;
     }
-
-    if (this.moves.length === 0) {
-      const currentOutcome = this.api.getOutcomeFromOffset({ x: 0, y: 0 });
-      if (currentOutcome === OUTCOMES.finish || currentOutcome === OUTCOMES.die) return;
-    }
+    
     await Utility.wait(this.speed);
-    await this.walk(this.api);
+    return await this.walk(this.api);
   }
 
   refreshNextMove() {
