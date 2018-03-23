@@ -1,56 +1,59 @@
 class SimplePathFinder {
-  constructor(scenario) {
-    this._grid = new Grid(scenario);
+  constructor(api, columns = 14, rows = 13) {
+    this._api = api;
+    this._map = new Map();
+    this.MAX_COLUMNS = columns;
+    this.MAX_ROWS = rows;
   }
 
-  resetGrid() {
-    return Utilities.copyGrid(this._grid);
-  }
-
-  getPath(scenario) {
-    const pathFn = scenario.checkpoints
-      ? this.multiStop.bind(this, scenario)
-      : this.findPath.bind(this, scenario.start, scenario.finish);
+  getPath() {
+    const checkpoints = Utilities.findCheckpoints(this._api, this.MAX_COLUMNS, this.MAX_ROWS);
+    const pathFn = checkpoints.length
+      ? this.multiStop.bind(this, checkpoints)
+      : this.findPath.bind(this, { x: 0, y: 0 });
     return pathFn();
   }
 
-  findPath(start, finish) {
-    this.grid = this.resetGrid();
-    return this.quickestPath(start, finish);
+  findPath(start, endPoint = null) {
+    this._map.clear();
+    return this.calculatePath(start, endPoint);
   }
 
-  multiStop(scenario) {
-    const paths = [];
-    let start = scenario.start;
-    const checkpoints = [...scenario.checkpoints, scenario.finish];
-    checkpoints.forEach(point => {
-      paths.push(this.findPath(start, point));
-      start = point;
-    });
-    return Utilities.flatten(paths);
+  multiStop(checkpoints) {
+    let start = { x: 0, y: 0 };
+
+    const paths = [...checkpoints, null]
+      .map(checkpoint => {
+        const path = this.findPath(start, checkpoint);
+        start = checkpoint;
+        return path;
+      })
+      .reduce((path, section) => [...path, ...section], []);
+
+    return paths;
   }
 
-  quickestPath(start, finish) {
-    this.addGoalTile(finish);
-
+  calculatePath(start, endPoint) {
     const point = Utilities.getStartPoint(start.x, start.y);
     const queue = [point];
-    let directions = Utilities.directions;
+    const directions = Utilities.directions;
 
     while (queue.length > 0) {
       const nextPoint = queue.shift();
-
       for (let i = 0, n = directions.length; i < n; i++) {
         const direction = directions[i];
         const candidate = this.getAdjacentPoint(nextPoint, direction);
-        if (Utilities.isEndPoint(candidate)) {
+        if (this.isFinished(candidate, endPoint)) {
           return candidate.path;
         }
         Utilities.isValidPoint(candidate) && queue.push(candidate);
       }
     }
+    throw new Error(`No path found ${count}`);
+  }
 
-    throw new Error('No path found');
+  isFinished(point, endPoint = null) {
+    return endPoint ? Utilities.compare(point, endPoint) : this.isGoal(point);
   }
 
   getAdjacentPoint(point, direction) {
@@ -59,51 +62,51 @@ class SimplePathFinder {
 
     let y = point.y;
     let x = point.x;
-    let offsets = Utilities.offsets;
 
-    y += offsets[direction].y;
-    x += offsets[direction].x;
+    y += Utilities.offsets[direction].y;
+    x += Utilities.offsets[direction].x;
 
     const candidate = Utilities.getPoint(x, y, path);
     candidate.status = this.getTileStatus(candidate);
 
-    Utilities.isValidPoint(candidate) && this.addVisitedTile(candidate);
-
+    Utilities.isValidPoint(candidate) && this.flagVisited(candidate);
     return candidate;
   }
 
-  addGoalTile(point) {
-    return this.updateGrid(point, Utilities.tileStatus.FINISH);
+  flagVisited(point) {
+    return this.updateMap(point, Utilities.tileStatus.VISITED);
   }
 
-  addVisitedTile(point) {
-    return this.updateGrid(point, Utilities.tileStatus.VISITED);
-  }
-
-  updateGrid(point, status) {
-    this.grid[point.y][point.x] = status;
-    return this.grid;
+  updateMap(point, status) {
+    return this._map.set(Utilities.toJSON(point), status).size;
   }
 
   isOutOfBounds({ x, y }) {
-    const rows = this.grid.length;
-    const columns = this.grid[0].length;
-    return x < 0 || x >= columns || y < 0 || y >= rows;
+    return (
+      x < -this.MAX_COLUMNS || x >= this.MAX_COLUMNS || y < -this.MAX_ROWS || y >= this.MAX_ROWS
+    );
   }
 
   isGoal(point) {
-    return this.grid[point.y][point.x] === Utilities.tileStatus.FINISH;
+    return Utilities.isFinished(this._api.getOutcomeFromOffset(point));
+  }
+
+  hasVisited(point) {
+    return this._map.has(Utilities.toJSON(point));
   }
 
   isAcceptableTile(point) {
-    return Utilities.tileValues.includes(this.grid[point.y][point.x]);
+    return this._api.getCellTypeFromOffset(point) && !this.hasVisited(point);
   }
 
   getTileStatus(point) {
-    return this.isOutOfBounds(point)
+    const outOfBounds = this.isOutOfBounds(point);
+    const goal = this.isGoal(point);
+    const acceptable = this.isAcceptableTile(point);
+    return outOfBounds
       ? Utilities.tileStatus.INVALID
-      : this.isGoal(point)
+      : goal
         ? Utilities.tileStatus.FINISH
-        : this.isAcceptableTile(point) ? Utilities.tileStatus.VALID : Utilities.tileStatus.BLOCKED;
+        : acceptable ? Utilities.tileStatus.VALID : Utilities.tileStatus.INVALID;
   }
 }

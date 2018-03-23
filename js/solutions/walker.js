@@ -1,28 +1,29 @@
 class Walker {
-  constructor(api) {
+  constructor(api, delay = 100) {
     this.api = api;
-    this.delay = 500;
+    this.delay = delay;
+    this.getOutcome = Utilities.getOutcome.bind(this, api);
   }
 
-  async takeWalk(path, getOutcome) {
-    return await this.walk(getOutcome, path);
+  async takeWalk(path) {
+    return await this.walk(path);
   }
 
-  async walk(getOutcome, path) {
+  async walk(path) {
     const steps = [...path];
     if (!steps.length) {
       return true;
     }
     const direction = steps.shift();
-    const outcome = getOutcome(direction);
+    const outcome = this.getOutcome(direction);
     let wait = 0;
-    if (outcome !== OUTCOMES.die) {
+    if (Utilities.isAlive(outcome)) {
       this.api.move(direction);
     } else {
       steps.unshift(direction);
       wait = this.delay;
     }
     const _ = await Utilities.timeout(wait);
-    return this.walk(getOutcome, steps);
+    return this.walk(steps);
   }
 }

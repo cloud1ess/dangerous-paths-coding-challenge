@@ -10,23 +10,21 @@ function Solutions() {
   // Refer to constants.js for <data type>
   // Offset is the relative to the players position
 
-  async function runSolution(index, api) {
-    const scenario = Object.assign({}, Scenarios[index]);
-    const pathFinder = new SimplePathFinder(scenario);
+  function runSolution(index, api) {
+    const pathFinder = new SimplePathFinder(api);
     const walker = new Walker(api);
-    const getOutcome = Utilities.getOutcome.bind(this, api);
-    const walkPath = walk.bind(this, walker, getOutcome, index);
+    const walkPath = walk.bind(this, walker, index);
     try {
-      const path = pathFinder.getPath(scenario);
+      const path = pathFinder.getPath();
       walkPath(path);
     } catch (error) {
       console.error(`💩 ${error}`);
     }
   }
 
-  async function walk(walker, getOutcome, index, path) {
+  async function walk(walker, index, path) {
     try {
-      const reachedGoal = await walker.takeWalk(path, getOutcome);
+      const _ = await walker.takeWalk(path);
       console.info(`Scenario ${index + 1} 👍`);
     } catch (error) {
       console.error(`💩 ${error}`);
@@ -36,5 +34,6 @@ function Solutions() {
   function stopSolution() {
     console.clear();
   }
+
   return { runSolution, stopSolution };
 }

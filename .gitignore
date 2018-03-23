@@ -1,6 +1,9 @@
 # Misc
 tmp/
+.vscode
 
 # Mac OSX Finder files.
 **/.DS_Store
 .DS_Store
+
+.jshintrc
