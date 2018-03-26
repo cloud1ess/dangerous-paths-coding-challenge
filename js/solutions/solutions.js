@@ -15,8 +15,8 @@ function Solutions () {
     return outcome !== OUTCOMES.die;
   }
 
-  function tryToMove (api, cameFrom) {
-    if (api.getOutcomeFromOffset() === OUTCOMES.finish) {
+  function tryToMove (api, currentOutcome, cameFrom) {
+    if (currentOutcome === OUTCOMES.finish) {
       return;
     }
 
@@ -44,17 +44,15 @@ function Solutions () {
     } else if (isNotDie(surroundings.left) && cameFrom !== DIRS.left) {
       api.move(DIRS.left);
       cameFrom = OPPOSITES[DIRS.left];
-    } else {
-      setTimeout(function () {
-        tryToMove(api, cameFrom)
-      }, 100);
     }
 
-    tryToMove(api, cameFrom);
+    var currentOutcome = api.getOutcomeFromOffset({ x: 0, y: 0 });
+    tryToMove(api, currentOutcome, cameFrom)
   }
 
   function runSolution (index, api) {
-    tryToMove(api, null);
+    var currentOutcome = api.getOutcomeFromOffset({ x: 0, y: 0 });
+    tryToMove(api, currentOutcome, null);
   }
 
   function stopSolution() {
