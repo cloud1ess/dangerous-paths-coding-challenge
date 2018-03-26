@@ -21,10 +21,6 @@ function Solutions () {
   function tryToMove (api, cameFrom) {
     var newCameFrom;
 
-    if (api.getOutcomeFromOffset() === OUTCOMES.finish) {
-      return 'yadone';
-    }
-
     var surroundings = {
       up: api.getOutcomeFromOffset(OFFSETS.up),
       right: api.getOutcomeFromOffset(OFFSETS.right),
