@@ -51,10 +51,6 @@ function Solutions () {
       newCameFrom = OPPOSITES[DIRS.left];
     }
 
-    if (api.getOutcomeFromOffset() === OUTCOMES.finish) {
-      return 'yadone';
-    }
-
     return newCameFrom || cameFrom;
   }
 
