@@ -30,7 +30,7 @@ function Solutions () {
 
     if (surroundings.left === OUTCOMES.finish) {
       api.move(DIRS.left);
-      return 'yadone';
+      return;
     }
 
     if (isNotDie(surroundings.up) && cameFrom !== DIRS.up) {
