@@ -11,13 +11,18 @@ function Solutions () {
   // Refer to constants.js for <data type>
   // Offset is the relative to the players position
 
+  var intervalId;
+  var cameFrom;
+
   function isNotDie (outcome) {
     return outcome !== OUTCOMES.die;
   }
 
-  function tryToMove (api, currentOutcome, cameFrom) {
-    if (currentOutcome === OUTCOMES.finish) {
-      return;
+  function tryToMove (api, cameFrom) {
+    var newCameFrom;
+
+    if (api.getOutcomeFromOffset() === OUTCOMES.finish) {
+      return 'yadone';
     }
 
     var surroundings = {
@@ -29,33 +34,53 @@ function Solutions () {
 
     if (surroundings.left === OUTCOMES.finish) {
       api.move(DIRS.left);
-      return DIRS.right;
+      return 'yadone';
     }
 
     if (isNotDie(surroundings.up) && cameFrom !== DIRS.up) {
       api.move(DIRS.up);
-      cameFrom = OPPOSITES[DIRS.up];
+      newCameFrom = OPPOSITES[DIRS.up];
     } else if (isNotDie(surroundings.right) && cameFrom !== DIRS.right) {
       api.move(DIRS.right);
-      cameFrom = OPPOSITES[DIRS.right];
+      newCameFrom = OPPOSITES[DIRS.right];
     } else if (isNotDie(surroundings.down) && cameFrom !== DIRS.down) {
       api.move(DIRS.down);
-      cameFrom = OPPOSITES[DIRS.down];
+      newCameFrom = OPPOSITES[DIRS.down];
     } else if (isNotDie(surroundings.left) && cameFrom !== DIRS.left) {
       api.move(DIRS.left);
-      cameFrom = OPPOSITES[DIRS.left];
+      newCameFrom = OPPOSITES[DIRS.left];
     }
 
-    var currentOutcome = api.getOutcomeFromOffset({ x: 0, y: 0 });
-    tryToMove(api, currentOutcome, cameFrom)
+    if (api.getOutcomeFromOffset() === OUTCOMES.finish) {
+      return 'yadone';
+    }
+
+    return newCameFrom || cameFrom;
+  }
+
+  function resetInterval () {
+    clearInterval(intervalId);
+    intervalId = null;
   }
 
   function runSolution (index, api) {
-    var currentOutcome = api.getOutcomeFromOffset({ x: 0, y: 0 });
-    tryToMove(api, currentOutcome, null);
+    if (intervalId) {
+      resetInterval();
+    }
+
+    cameFrom = null;
+
+    intervalId = setInterval(function () {
+      cameFrom = tryToMove(api, cameFrom, index);
+      if (api.getOutcomeFromOffset() === OUTCOMES.finish) {
+        stopSolution();
+      }
+    }, 100);
   }
 
   function stopSolution() {
+    resetInterval();
+    cameFrom = null;
   }
 
   return {
