@@ -44,8 +44,6 @@ function Solutions () {
   // Private functions
 
   function tryToMove (api, cameFrom) {
-    var newCameFrom;
-
     var surroundings = lookAtSurroundings(api);
 
     if (surroundings.left === OUTCOMES.finish) {
@@ -53,18 +51,12 @@ function Solutions () {
       return;
     }
 
-    if (isSafeAndNotAStepBack(DIRS.up, surroundings)) {
-      api.move(DIRS.up);
-      newCameFrom = OPPOSITES[DIRS.up];
-    } else if (isSafeAndNotAStepBack(DIRS.right, surroundings)) {
-      api.move(DIRS.right);
-      newCameFrom = OPPOSITES[DIRS.right];
-    } else if (isSafeAndNotAStepBack(DIRS.down, surroundings)) {
-      api.move(DIRS.down);
-      newCameFrom = OPPOSITES[DIRS.down];
-    } else if (isSafeAndNotAStepBack(DIRS.left, surroundings)) {
-      api.move(DIRS.left);
-      newCameFrom = OPPOSITES[DIRS.left];
+    var newCameFrom;
+    var chosenDirection = chooseDirection(surroundings);
+
+    if (chosenDirection) {
+      api.move(chosenDirection);
+      newCameFrom = OPPOSITES[chosenDirection];
     }
 
     return newCameFrom || cameFrom;
@@ -78,6 +70,20 @@ function Solutions () {
     surroundings[DIRS.left] = api.getOutcomeFromOffset(OFFSETS.left);
 
     return surroundings;
+  }
+
+  function chooseDirection (surroundings) {
+    if (isSafeAndNotAStepBack(DIRS.up, surroundings)) {
+      return DIRS.up;
+    } else if (isSafeAndNotAStepBack(DIRS.right, surroundings)) {
+      return DIRS.right;
+    } else if (isSafeAndNotAStepBack(DIRS.down, surroundings)) {
+      return DIRS.down;
+    } else if (isSafeAndNotAStepBack(DIRS.left, surroundings)) {
+      return DIRS.left;
+    } else {
+      return null;
+    }
   }
 
   function isNotDie (outcome) {
