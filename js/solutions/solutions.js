@@ -51,15 +51,14 @@ function Solutions () {
       return;
     }
 
-    var newCameFrom;
     var chosenDirection = chooseDirection(surroundings);
 
     if (chosenDirection) {
       api.move(chosenDirection);
-      newCameFrom = OPPOSITES[chosenDirection];
+      return OPPOSITES[chosenDirection];
+    } else {
+      return cameFrom;
     }
-
-    return newCameFrom || cameFrom;
   }
 
   function lookAtSurroundings (api) {
