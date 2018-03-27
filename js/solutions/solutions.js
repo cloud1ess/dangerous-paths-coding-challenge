@@ -71,12 +71,13 @@ function Solutions () {
   }
 
   function lookAtSurroundings (api) {
-    return {
-      up: api.getOutcomeFromOffset(OFFSETS.up),
-      right: api.getOutcomeFromOffset(OFFSETS.right),
-      down: api.getOutcomeFromOffset(OFFSETS.down),
-      left: api.getOutcomeFromOffset(OFFSETS.left),
-    };
+    var surroundings = {};
+    surroundings[DIRS.up] = api.getOutcomeFromOffset(OFFSETS.up);
+    surroundings[DIRS.right] = api.getOutcomeFromOffset(OFFSETS.right);
+    surroundings[DIRS.down] = api.getOutcomeFromOffset(OFFSETS.down);
+    surroundings[DIRS.left] = api.getOutcomeFromOffset(OFFSETS.left);
+
+    return surroundings;
   }
 
   function isNotDie (outcome) {
