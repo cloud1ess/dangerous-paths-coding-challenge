@@ -14,16 +14,20 @@ function Solutions () {
   var intervalId;
   var cameFrom;
 
+  function resetScenarioState () {
+    if (intervalId) {
+      clearInterval(intervalId);
+      intervalId = null;
+    }
+    cameFrom = null;
+  }
+
   var timeBetweenSteps = 100;
 
   // Public functions
 
   function runSolution (index, api) {
-    if (intervalId) {
-      resetInterval();
-    }
-
-    cameFrom = null;
+    resetScenarioState();
 
     intervalId = setInterval(function () {
       cameFrom = tryToMove(api, cameFrom, index);
@@ -34,8 +38,7 @@ function Solutions () {
   }
 
   function stopSolution() {
-    resetInterval();
-    cameFrom = null;
+    resetScenarioState();
   }
 
   // Private functions
@@ -75,12 +78,6 @@ function Solutions () {
 
     return newCameFrom || cameFrom;
   }
-
-  function resetInterval () {
-    clearInterval(intervalId);
-    intervalId = null;
-  }
-
 
   return {
     runSolution: runSolution,
