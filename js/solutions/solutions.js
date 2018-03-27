@@ -12,20 +12,20 @@ function Solutions () {
   // Offset is the relative to the players position
 
   var intervalId;
-  var cameFrom;
 
   function resetScenarioState () {
     if (intervalId) {
       clearInterval(intervalId);
       intervalId = null;
     }
-    cameFrom = null;
   }
 
   // Public functions
 
   function runSolution (index, api) {
     resetScenarioState();
+
+    var cameFrom;
 
     var timeBetweenSteps = 100;
 
@@ -51,7 +51,7 @@ function Solutions () {
       return;
     }
 
-    var chosenDirection = chooseDirection(surroundings);
+    var chosenDirection = chooseDirection(surroundings, cameFrom);
 
     if (chosenDirection) {
       api.move(chosenDirection);
@@ -71,14 +71,14 @@ function Solutions () {
     return surroundings;
   }
 
-  function chooseDirection (surroundings) {
-    if (isSafeAndNotAStepBack(DIRS.up, surroundings)) {
+  function chooseDirection (surroundings, cameFrom) {
+    if (isSafeAndNotAStepBack(DIRS.up, surroundings, cameFrom)) {
       return DIRS.up;
-    } else if (isSafeAndNotAStepBack(DIRS.right, surroundings)) {
+    } else if (isSafeAndNotAStepBack(DIRS.right, surroundings, cameFrom)) {
       return DIRS.right;
-    } else if (isSafeAndNotAStepBack(DIRS.down, surroundings)) {
+    } else if (isSafeAndNotAStepBack(DIRS.down, surroundings, cameFrom)) {
       return DIRS.down;
-    } else if (isSafeAndNotAStepBack(DIRS.left, surroundings)) {
+    } else if (isSafeAndNotAStepBack(DIRS.left, surroundings, cameFrom)) {
       return DIRS.left;
     } else {
       return null;
@@ -89,7 +89,7 @@ function Solutions () {
     return outcome !== OUTCOMES.die;
   }
 
-  function isSafeAndNotAStepBack (direction, surroundings) {
+  function isSafeAndNotAStepBack (direction, surroundings, cameFrom) {
     return isNotDie(surroundings[direction]) && cameFrom !== direction;
   }
 
