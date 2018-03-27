@@ -57,16 +57,16 @@ function Solutions () {
       return;
     }
 
-    if (isNotDie(surroundings.up) && cameFrom !== DIRS.up) {
+    if (isSafeAndNotAStepBack(DIRS.up, surroundings)) {
       api.move(DIRS.up);
       newCameFrom = OPPOSITES[DIRS.up];
-    } else if (isNotDie(surroundings.right) && cameFrom !== DIRS.right) {
+    } else if (isSafeAndNotAStepBack(DIRS.right, surroundings)) {
       api.move(DIRS.right);
       newCameFrom = OPPOSITES[DIRS.right];
-    } else if (isNotDie(surroundings.down) && cameFrom !== DIRS.down) {
+    } else if (isSafeAndNotAStepBack(DIRS.down, surroundings)) {
       api.move(DIRS.down);
       newCameFrom = OPPOSITES[DIRS.down];
-    } else if (isNotDie(surroundings.left) && cameFrom !== DIRS.left) {
+    } else if (isSafeAndNotAStepBack(DIRS.left, surroundings)) {
       api.move(DIRS.left);
       newCameFrom = OPPOSITES[DIRS.left];
     }
@@ -81,6 +81,10 @@ function Solutions () {
       down: api.getOutcomeFromOffset(OFFSETS.down),
       left: api.getOutcomeFromOffset(OFFSETS.left),
     };
+  }
+
+  function isSafeAndNotAStepBack (direction, surroundings) {
+    return isNotDie(surroundings[direction]) && cameFrom !== direction;
   }
 
   return {
