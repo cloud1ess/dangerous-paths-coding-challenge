@@ -22,12 +22,12 @@ function Solutions () {
     cameFrom = null;
   }
 
-  var timeBetweenSteps = 100;
-
   // Public functions
 
   function runSolution (index, api) {
     resetScenarioState();
+
+    var timeBetweenSteps = 100;
 
     intervalId = setInterval(function () {
       cameFrom = tryToMove(api, cameFrom);
