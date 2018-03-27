@@ -43,10 +43,6 @@ function Solutions () {
 
   // Private functions
 
-  function isNotDie (outcome) {
-    return outcome !== OUTCOMES.die;
-  }
-
   function tryToMove (api, cameFrom) {
     var newCameFrom;
 
@@ -81,6 +77,10 @@ function Solutions () {
       down: api.getOutcomeFromOffset(OFFSETS.down),
       left: api.getOutcomeFromOffset(OFFSETS.left),
     };
+  }
+
+  function isNotDie (outcome) {
+    return outcome !== OUTCOMES.die;
   }
 
   function isSafeAndNotAStepBack (direction, surroundings) {
