@@ -50,12 +50,7 @@ function Solutions () {
   function tryToMove (api, cameFrom) {
     var newCameFrom;
 
-    var surroundings = {
-      up: api.getOutcomeFromOffset(OFFSETS.up),
-      right: api.getOutcomeFromOffset(OFFSETS.right),
-      down: api.getOutcomeFromOffset(OFFSETS.down),
-      left: api.getOutcomeFromOffset(OFFSETS.left),
-    };
+    var surroundings = lookAtSurroundings(api);
 
     if (surroundings.left === OUTCOMES.finish) {
       api.move(DIRS.left);
@@ -77,6 +72,15 @@ function Solutions () {
     }
 
     return newCameFrom || cameFrom;
+  }
+
+  function lookAtSurroundings (api) {
+    return {
+      up: api.getOutcomeFromOffset(OFFSETS.up),
+      right: api.getOutcomeFromOffset(OFFSETS.right),
+      down: api.getOutcomeFromOffset(OFFSETS.down),
+      left: api.getOutcomeFromOffset(OFFSETS.left),
+    };
   }
 
   return {
