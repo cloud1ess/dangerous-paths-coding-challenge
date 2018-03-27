@@ -16,6 +16,30 @@ function Solutions () {
 
   var timeBetweenSteps = 100;
 
+  // Public functions
+
+  function runSolution (index, api) {
+    if (intervalId) {
+      resetInterval();
+    }
+
+    cameFrom = null;
+
+    intervalId = setInterval(function () {
+      cameFrom = tryToMove(api, cameFrom, index);
+      if (api.getOutcomeFromOffset() === OUTCOMES.finish) {
+        stopSolution();
+      }
+    }, timeBetweenSteps);
+  }
+
+  function stopSolution() {
+    resetInterval();
+    cameFrom = null;
+  }
+
+  // Private functions
+
   function isNotDie (outcome) {
     return outcome !== OUTCOMES.die;
   }
@@ -57,25 +81,6 @@ function Solutions () {
     intervalId = null;
   }
 
-  function runSolution (index, api) {
-    if (intervalId) {
-      resetInterval();
-    }
-
-    cameFrom = null;
-
-    intervalId = setInterval(function () {
-      cameFrom = tryToMove(api, cameFrom, index);
-      if (api.getOutcomeFromOffset() === OUTCOMES.finish) {
-        stopSolution();
-      }
-    }, timeBetweenSteps);
-  }
-
-  function stopSolution() {
-    resetInterval();
-    cameFrom = null;
-  }
 
   return {
     runSolution: runSolution,
