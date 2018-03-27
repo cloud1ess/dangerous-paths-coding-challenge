@@ -14,6 +14,8 @@ function Solutions () {
   var intervalId;
   var cameFrom;
 
+  var timeBetweenSteps = 100;
+
   function isNotDie (outcome) {
     return outcome !== OUTCOMES.die;
   }
@@ -67,7 +69,7 @@ function Solutions () {
       if (api.getOutcomeFromOffset() === OUTCOMES.finish) {
         stopSolution();
       }
-    }, 100);
+    }, timeBetweenSteps);
   }
 
   function stopSolution() {
