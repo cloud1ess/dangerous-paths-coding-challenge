@@ -30,7 +30,7 @@ function Solutions () {
     resetScenarioState();
 
     intervalId = setInterval(function () {
-      cameFrom = tryToMove(api, cameFrom, index);
+      cameFrom = tryToMove(api, cameFrom);
       if (api.getOutcomeFromOffset() === OUTCOMES.finish) {
         stopSolution();
       }
