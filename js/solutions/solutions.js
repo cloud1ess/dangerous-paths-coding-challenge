@@ -13,17 +13,10 @@ function Solutions () {
 
   var intervalId;
 
-  function resetScenarioState () {
-    if (intervalId) {
-      clearInterval(intervalId);
-      intervalId = null;
-    }
-  }
-
   // Public functions
 
   function runSolution (index, api) {
-    resetScenarioState();
+    stopSolution();
 
     var cameFrom;
 
@@ -38,7 +31,10 @@ function Solutions () {
   }
 
   function stopSolution() {
-    resetScenarioState();
+    if (intervalId) {
+      clearInterval(intervalId);
+      intervalId = null;
+    }
   }
 
   // Private functions
