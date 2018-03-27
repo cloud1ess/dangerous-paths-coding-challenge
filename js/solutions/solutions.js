@@ -16,7 +16,7 @@ function Solutions () {
   // Public functions
 
   function runSolution (index, api) {
-    stopSolution();
+    stopSolution(); // Just in case...
 
     var cameFrom;
 
