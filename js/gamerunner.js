@@ -18,25 +18,27 @@ function GameRunner (gamePanel, updateProgress) {
     });
     runNextScenario(true);
 
-    function runNextScenario (won) {
+    function runNextScenario (won, finishedScenario) {
       nextScenario++;
 
       if (won && nextScenario <= unlocked && nextScenario < Scenarios.length) {
-        runScenario(nextScenario);
+        runScenario(nextScenario, null, finishedScenario);
       } else {
         runningAllCallback = null
       }
     }
   }
 
-  function runScenario (index, singleRun) {
+  function runScenario (index, singleRun, stopSolution) {
     if (singleRun && runningAllCallback) {
       runningAllCallback = null;
     }
-    console.log(currentScenario)
     if (currentScenario || currentScenario === 0) {
       solutions.stopSolution();
       scenarioFinished(false);
+    }
+    if (stopSolution) {
+      solutions.stopSolution();
     }
     currentScenario = index;
 
@@ -67,7 +69,8 @@ function GameRunner (gamePanel, updateProgress) {
           won: won,
         }
       })
-      runningAllCallback(won);
+      currentScenario = null;
+      runningAllCallback(won, true);
     } else {
       currentScenario = null;
       updateProgress({
