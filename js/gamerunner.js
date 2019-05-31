@@ -33,7 +33,7 @@ function GameRunner (gamePanel, updateProgress) {
     if (singleRun && runningAllCallback) {
       runningAllCallback = null;
     }
-
+    console.log(currentScenario)
     if (currentScenario || currentScenario === 0) {
       solutions.stopSolution();
       scenarioFinished(false);
@@ -67,7 +67,6 @@ function GameRunner (gamePanel, updateProgress) {
           won: won,
         }
       })
-      currentScenario = null;
       runningAllCallback(won);
     } else {
       currentScenario = null;
